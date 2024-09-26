@@ -4,7 +4,7 @@ from .views import *
 urlpatterns = [
 
 
-    path('', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
+    path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
     path('categories/<int:pk>/', CategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='category_detail'),
 
     path('instructors/', InstructorViewSet.as_view({'get': 'list', 'post': 'create'}), name='instructor_list'),
@@ -13,7 +13,7 @@ urlpatterns = [
     path('students/', StudentViewSet.as_view({'get': 'list', 'post': 'create'}), name='student_list'),
     path('students/<int:pk>/', StudentViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='student_detail'),
 
-    path('courses/', CourseViewSet.as_view({'get': 'list', 'post': 'create'}), name='course_list'),
+    path('/courses', CourseViewSet.as_view({'get': 'list', 'post': 'create'}), name='course_list'),
     path('courses/<int:pk>/', CourseViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='course_detail'),
 
     path('lessons/', LessonViewSet.as_view({'get': 'list', 'post': 'create'}), name='lesson_list'),
@@ -31,4 +31,6 @@ urlpatterns = [
 
     path('orders/', OrderViewSet.as_view({'get': 'list', 'post': 'create'}), name='order_list'),
     path('orders/<int:pk>/', OrderViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='order_detail'),
+
+    path('banners/', BanerListCreateView.as_view(), name='baner_list_create'),
 ]

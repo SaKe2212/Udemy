@@ -1,9 +1,6 @@
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
-from .models import Category, Instructor, Student, Course, Lesson, Review, Enrollment, Cart, CartItem, Order
+from .models import Category, Instructor, Student, Course, Lesson, Review, Enrollment, Cart, CartItem, Order,Baner
 from .serializers import (
     CategorySerializer,
     InstructorSerializer,
@@ -14,7 +11,9 @@ from .serializers import (
     EnrollmentSerializer,
     CartSerializer,
     CartItemSerializer,
-    OrderSerializer)
+    OrderSerializer, BanerSerializer)
+
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -86,3 +85,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class BanerListCreateView(generics.ListCreateAPIView):
+    queryset = Baner.objects.all()
+    serializer_class = BanerSerializer
