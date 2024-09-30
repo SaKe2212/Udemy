@@ -4,7 +4,22 @@ from django.contrib.auth.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
+class Cat(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='cats')
+
+    def __str__(self):
+        return self.name
+
+
+class PopularTopic(models.Model):
+    name = models.CharField(max_length=100)
+    cat = models.ForeignKey(Cat, on_delete=models.CASCADE, related_name='popular_topics')
 
     def __str__(self):
         return self.name
@@ -79,7 +94,7 @@ class Enrollment(models.Model):
 
 
 class Cart(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='cart')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='carts')
     courses = models.ManyToManyField(Course, through='CartItem', related_name='carts')
 
     def __str__(self):
@@ -105,7 +120,7 @@ class Order(models.Model):
         return f"Order {self.id} by {self.student.user.username}"
 
 
-class Baner(models.Model):
+class Banner(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='banners/')
     link = models.URLField(max_length=200, blank=True, null=True)
@@ -114,4 +129,3 @@ class Baner(models.Model):
 
     def __str__(self):
         return self.title
-

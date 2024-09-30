@@ -7,6 +7,13 @@ urlpatterns = [
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
     path('categories/<int:pk>/', CategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='category_detail'),
 
+    path('cats/', CatViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
+    path('cats/<int:pk>/', CatViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),name='category_detail'),
+
+    path('popularTopics/', PopularTopicViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
+    path('popularTopics/<int:pk>/', PopularTopicViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='category_detail'),
+
     path('instructors/', InstructorViewSet.as_view({'get': 'list', 'post': 'create'}), name='instructor_list'),
     path('instructors/<int:pk>/', InstructorViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='instructor_detail'),
 
@@ -32,5 +39,5 @@ urlpatterns = [
     path('orders/', OrderViewSet.as_view({'get': 'list', 'post': 'create'}), name='order_list'),
     path('orders/<int:pk>/', OrderViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='order_detail'),
 
-    path('banners/', BanerListCreateView.as_view(), name='baner_list_create'),
+    path('banners/', BannerListCreateView.as_view(), name='banner_list_create'),
 ]
