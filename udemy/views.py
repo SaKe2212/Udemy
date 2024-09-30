@@ -1,20 +1,7 @@
-from rest_framework import viewsets, permissions, generics, status
+from rest_framework import viewsets, permissions, generics
 from rest_framework.response import Response
-from .models import Category, Cupcategory,PopularTopic,Instructor, Student, Course, Lesson, Review, Enrollment, Cart, CartItem, Order,Banner
-from .serializers import (
-    CategorySerializer,
-    InstructorSerializer,
-    StudentSerializer,
-    CourseSerializer,
-    LessonSerializer,
-    ReviewSerializer,
-    EnrollmentSerializer,
-    CartSerializer,
-    CartItemSerializer,
-    OrderSerializer,
-    BannerSerializer,
-    PopularTopicSerializer,
-    CupcategorySerializer)
+from .models import *
+from .serializers import *
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

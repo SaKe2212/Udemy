@@ -17,14 +17,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CupcategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cupcategory
-        fields = ['id', 'name', 'category']
+         model = Cupcategory
+         fields = ['id', 'name', 'category']
 
 
 class PopularTopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = PopularTopic
-        fields = ['id', 'name', 'cupcategory']
+        fields ='__all__'
 
 
 class InstructorSerializer(serializers.ModelSerializer):
