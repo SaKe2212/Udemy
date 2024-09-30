@@ -7,8 +7,8 @@ urlpatterns = [
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
     path('categories/<int:pk>/', CategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='category_detail'),
 
-    path('cats/', CatViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
-    path('cats/<int:pk>/', CatViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),name='category_detail'),
+    path('cupcategories/', CupcategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
+    path('cupcategories/<int:pk>/', CupcategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),name='category_detail'),
 
     path('popularTopics/', PopularTopicViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
     path('popularTopics/<int:pk>/', PopularTopicViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),

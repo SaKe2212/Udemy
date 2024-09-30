@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Cat, PopularTopic, Instructor, Student, Course, Lesson, Review, Enrollment, Cart, CartItem, Order,Banner
+from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Course, Lesson, Review, Enrollment, Cart, CartItem, Order,Banner
 from django.contrib.auth.models import User
 
 
@@ -15,16 +15,16 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name',]
 
 
-class CatSerializer(serializers.ModelSerializer):
+class CupcategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cat
+        model = Cupcategory
         fields = ['id', 'name', 'category']
 
 
 class PopularTopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = PopularTopic
-        fields = ['id', 'name', 'cat']
+        fields = ['id', 'name', 'cupcategory']
 
 
 class InstructorSerializer(serializers.ModelSerializer):
@@ -107,3 +107,5 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = '__all__'
+
+

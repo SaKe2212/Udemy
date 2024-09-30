@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
-from .models import Category, Cat,PopularTopic,Instructor, Student, Course, Lesson, Review, Enrollment, Cart, CartItem, Order,Banner
+from .models import Category, Cupcategory,PopularTopic,Instructor, Student, Course, Lesson, Review, Enrollment, Cart, CartItem, Order,Banner
 from .serializers import (
     CategorySerializer,
     InstructorSerializer,
@@ -13,8 +13,8 @@ from .serializers import (
     CartItemSerializer,
     OrderSerializer,
     BannerSerializer,
-    CatSerializer,
-    PopularTopicSerializer)
+    PopularTopicSerializer,
+    CupcategorySerializer)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -23,9 +23,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-class CatViewSet(viewsets.ModelViewSet):
-    queryset = Cat.objects.all()
-    serializer_class = CatSerializer
+class CupcategoryViewSet(viewsets.ModelViewSet):
+    queryset = Cupcategory.objects.all()
+    serializer_class = CupcategorySerializer
 
 
 class PopularTopicViewSet(viewsets.ModelViewSet):
@@ -103,3 +103,4 @@ class OrderViewSet(viewsets.ModelViewSet):
 class BannerListCreateView(generics.ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
+

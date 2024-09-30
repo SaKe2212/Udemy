@@ -9,7 +9,7 @@ class Category(models.Model):
         return self.name
 
 
-class Cat(models.Model):
+class Cupcategory (models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='cats')
 
@@ -19,7 +19,7 @@ class Cat(models.Model):
 
 class PopularTopic(models.Model):
     name = models.CharField(max_length=100)
-    cat = models.ForeignKey(Cat, on_delete=models.CASCADE, related_name='popular_topics')
+    Cupcategory= models.ForeignKey(Cupcategory, on_delete=models.CASCADE, related_name='popular_topics')
 
     def __str__(self):
         return self.name

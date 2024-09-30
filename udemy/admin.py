@@ -3,7 +3,7 @@ from .models import *
 
 
 admin.site.register(Category)
-admin.site.register(Cat)
+admin.site.register(Cupcategory)
 admin.site.register(PopularTopic)
 admin.site.register(Instructor)
 admin.site.register(Student)
