@@ -1,18 +1,20 @@
 from django.urls import path
-from .views import *
+from .views import (
+    CategoryViewSet, CupcategoryViewSet, PopularTopicViewSet, InstructorViewSet,
+    StudentViewSet, CourseViewSet, LessonViewSet, ReviewViewSet, EnrollmentViewSet,
+    CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView, BasketListViewSet
+)
 
 urlpatterns = [
-
 
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
     path('categories/<int:pk>/', CategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='category_detail'),
 
-    path('cupcategories/', CupcategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
-    path('cupcategories/<int:pk>/', CupcategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),name='category_detail'),
+    path('cupcategories/', CupcategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='cupcategory_list'),
+    path('cupcategories/<int:pk>/', CupcategoryViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='cupcategory_detail'),
 
-    path('popularTopics/', PopularTopicViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
-    path('popularTopics/<int:pk>/', PopularTopicViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
-         name='category_detail'),
+    path('popularTopics/', PopularTopicViewSet.as_view({'get': 'list', 'post': 'create'}), name='popular_topic_list'),
+    path('popularTopics/<int:pk>/', PopularTopicViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='popular_topic_detail'),
 
     path('instructors/', InstructorViewSet.as_view({'get': 'list', 'post': 'create'}), name='instructor_list'),
     path('instructors/<int:pk>/', InstructorViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='instructor_detail'),
@@ -20,8 +22,10 @@ urlpatterns = [
     path('students/', StudentViewSet.as_view({'get': 'list', 'post': 'create'}), name='student_list'),
     path('students/<int:pk>/', StudentViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='student_detail'),
 
-    path('/courses', CourseViewSet.as_view({'get': 'list', 'post': 'create'}), name='course_list'),
+    path('courses/', CourseViewSet.as_view({'get': 'list', 'post': 'create'}), name='course_list'),
     path('courses/<int:pk>/', CourseViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='course_detail'),
+
+    path('baskets/', BasketListViewSet.as_view({'get': 'list', 'post': 'create'}), name='course_list'),
 
     path('lessons/', LessonViewSet.as_view({'get': 'list', 'post': 'create'}), name='lesson_list'),
     path('lessons/<int:pk>/', LessonViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='lesson_detail'),
