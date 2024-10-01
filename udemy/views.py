@@ -97,3 +97,9 @@ class BannerListCreateView(generics.ListCreateAPIView):
     serializer_class = BannerSerializer
 
 
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+

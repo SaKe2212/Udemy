@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     CategoryViewSet, CupcategoryViewSet, PopularTopicViewSet, InstructorViewSet,
     StudentViewSet, CourseViewSet, LessonViewSet, ReviewViewSet, EnrollmentViewSet,
-    CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView, BasketListViewSet
+    CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView, BasketListViewSet,TeacherViewSet
 )
 
 urlpatterns = [
@@ -44,4 +44,8 @@ urlpatterns = [
     path('orders/<int:pk>/', OrderViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='order_detail'),
 
     path('banners/', BannerListCreateView.as_view(), name='banner_list_create'),
+
+    path('teachers/', TeacherViewSet.as_view({'get': 'list', 'post': 'create'}), name='teacher_list'),
+    path('teachers/<int:pk>/', TeacherViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='teacher_detail'),
 ]
