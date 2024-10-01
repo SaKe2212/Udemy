@@ -38,6 +38,11 @@ class CourseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
+class BasketListViewSet(viewsets.ModelViewSet):
+    queryset = Basket.objects.all()
+    serializer_class = BasketSerializer
+
+
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
@@ -90,4 +95,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 class BannerListCreateView(generics.ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
+
+
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 
