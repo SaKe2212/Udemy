@@ -1,7 +1,9 @@
 from rest_framework import viewsets, permissions, generics
 from rest_framework.response import Response
+from django.shortcuts import render
 from .models import *
 from .serializers import *
+from .models import Course
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -91,3 +93,6 @@ class BannerListCreateView(generics.ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
 
+def course_list(request):
+    course = Course.object.all()
+    return render(request, 'courses/course_list.html', {'course': course})

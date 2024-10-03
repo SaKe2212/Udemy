@@ -1,10 +1,10 @@
 from django.contrib import admin
 from .models import (
-    Category, Cupcategory, PopularTopic, Course, Lesson, Review, Banner,
+    Category, Cupcategory, PopularTopic,  Lesson, Review, Banner,
     Instructor, Student, Enrollment, Cart, CartItem, Order
 )
 from modeltranslation.admin import TranslationAdmin
-
+from .models import Course
 class Media:
     js = (
         'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
@@ -52,9 +52,11 @@ class BannerAdmin(TranslationAdmin):
         pass
 
 
+
 admin.site.register(Instructor)
 admin.site.register(Student)
 admin.site.register(Enrollment)
 admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(Order)
+
