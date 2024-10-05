@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, generics
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
+from .forms import SignUpForm
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -91,3 +92,34 @@ class BannerListCreateView(generics.ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import SignUpForm
+
+def register(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+    return render(request, 'udemy1/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
+from django.views.generic import TemplateView
+
+class HomeView(TemplateView):
+    template_name = 'udemy1/home.html'

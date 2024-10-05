@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Category, Cupcategory, PopularTopic, Course, Lesson, Review, Banner,
-    Instructor, Student, Enrollment, Cart, CartItem, Order
+    Instructor, Student, Enrollment, Cart, CartItem, Order,CustomUser
 )
 from modeltranslation.admin import TranslationAdmin
 
@@ -58,3 +58,5 @@ admin.site.register(Enrollment)
 admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(Order)
+admin.site.register(CustomUser)
+
