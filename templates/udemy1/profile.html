@@ -1,0 +1,30 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+</head>
+<body>
+    <h1>Your Profile</h1>
+    <p><strong>Username:</strong> {{ profile.user.username }}</p>
+    <p><strong>Email:</strong> {{ profile.user.email }}</p>
+
+    <!-- Если у вас есть другие поля в модели Profile, добавьте их здесь -->
+    <p><strong>First Name:</strong> {{ profile.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ profile.last_name }}</p>
+
+    <!-- Убираем блок с изображением профиля -->
+    <p><strong>Birth Date:</strong> {{ profile.birth_date }}</p>
+<!--    <p><strong>Location:</strong> {{ profile.location }}</p>-->
+<!--    <p><strong>Bio:</strong> {{ profile.bio }}</p>-->
+<h1>Edit Profile</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save changes</button>
+</form>
+
+</body>
+</html>

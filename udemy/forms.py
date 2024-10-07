@@ -1,25 +1,6 @@
-# from django import forms
-# from django.contrib.auth.forms import UserCreationForm
-# from django.contrib.auth.models import User
-# #
-# # class SignUpForm(UserCreationForm):
-# #     email = forms.EmailField()
-# #
-# #     class Meta:
-# #         model = User
-# #         fields = ['username', 'email', 'password1', 'password2']
-#
-# from django.contrib.auth.forms import UserCreationForm
-# from .models import CustomUser  # Импорт вашей кастомной модели
-#
-# class CustomUserCreationForm(UserCreationForm):
-#     class Meta:
-#         model = CustomUser  # Используйте кастомную модель здесь
-#         fields = ('username', 'email', 'password1', 'password2')
-
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser  # Импорт вашей кастомной модели
+from .models import CustomUser
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -34,3 +15,11 @@ class SignUpForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+from django import forms
+from .models import CustomUser
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name','birth_date']  # Укажи необходимые поля

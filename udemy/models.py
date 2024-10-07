@@ -5,6 +5,9 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
+    birth_date = models.DateField(null=True, blank=True)
+
+
 
     def __str__(self):
         return self.username
@@ -124,3 +127,17 @@ class Banner(models.Model):
 
     def __str__(self):
         return self.title
+from django.contrib.auth import get_user_model
+from django.db import models
+from django.conf import settings
+
+User = get_user_model()  # Получаем пользовательскую модель
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    birth_date = models.DateField(null=True, blank=True)  # Поле для даты рождения
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"

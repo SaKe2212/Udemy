@@ -1,10 +1,15 @@
 from rest_framework import viewsets, permissions, generics
 from rest_framework.response import Response
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.views.generic import TemplateView
 from .models import *
 from .serializers import *
-from .forms import SignUpForm
+from .forms import SignUpForm, ProfileForm
 
 
+# ViewSets
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -92,18 +97,19 @@ class BannerListCreateView(generics.ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import SignUpForm
 
+# Registration and Login
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')
+
+            # Создаем профиль автоматически, только если его ещё нет
+            Profile.objects.get_or_create(user=user)
+
+            return redirect('home')  # Перенаправление на главную страницу
     else:
         form = SignUpForm()
     return render(request, 'udemy1/register.html', {'form': form})
@@ -119,7 +125,33 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
-from django.views.generic import TemplateView
 
+
+# Home View
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'
+
+
+def profile_view(request):
+    try:
+        profile = Profile.objects.get(user=request.user)
+        return render(request, 'udemy1/profile.html', {'profile': profile})
+    except Profile.DoesNotExist:
+        return redirect('edit_profile')
+
+
+from django.shortcuts import render, redirect
+from .forms import ProfileForm
+from .models import Profile
+
+def update_profile(request):
+    profile = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # Укажите здесь URL для редиректа
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'udemy1/update_profile.html', {'form': form})
