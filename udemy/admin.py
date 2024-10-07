@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import (
     Category, Cupcategory, PopularTopic, Course, Lesson, Review, Banner,
     Instructor, Student, Enrollment, Cart, CartItem, Order,CustomUser
+    Instructor, Student, Enrollment, Cart, CartItem, Order,Basket,Teacher
+
 )
 from modeltranslation.admin import TranslationAdmin
 
@@ -36,6 +38,9 @@ class CourseAdmin(TranslationAdmin):
     class Media(Media):
         pass
 
+
+class BasketAdmin(admin.ModelAdmin):
+    list_display = ('student',)
 @admin.register(Lesson)
 class LessonAdmin(TranslationAdmin):
     class Media(Media):
@@ -58,5 +63,9 @@ admin.site.register(Enrollment)
 admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(Order)
+
 admin.site.register(CustomUser)
+admin.site.register(Basket)
+admin.site.register(Teacher)
+
 

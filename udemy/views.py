@@ -44,6 +44,11 @@ class CourseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
+class BasketListViewSet(viewsets.ModelViewSet):
+    queryset = Basket.objects.all()
+    serializer_class = BasketSerializer
+
+
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
@@ -98,6 +103,7 @@ class BannerListCreateView(generics.ListCreateAPIView):
     serializer_class = BannerSerializer
 
 
+<<<<<<< HEAD
 # Registration and Login
 def register(request):
     if request.method == 'POST':
@@ -155,3 +161,11 @@ def update_profile(request):
         form = ProfileForm(instance=profile)
 
     return render(request, 'udemy1/update_profile.html', {'form': form})
+=======
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+>>>>>>> dev
