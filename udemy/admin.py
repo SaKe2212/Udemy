@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Category, Cupcategory, PopularTopic, Course, Lesson, Review, Banner,
-    Instructor, Student, Enrollment, Cart, CartItem, Order,CustomUser
+    Instructor, Student, Enrollment, Cart, CartItem, Order,CustomUser,
     Instructor, Student, Enrollment, Cart, CartItem, Order,Basket,Teacher
 
 )

@@ -103,7 +103,7 @@ class BannerListCreateView(generics.ListCreateAPIView):
     serializer_class = BannerSerializer
 
 
-<<<<<<< HEAD
+
 # Registration and Login
 def register(request):
     if request.method == 'POST':
@@ -161,11 +161,10 @@ def update_profile(request):
         form = ProfileForm(instance=profile)
 
     return render(request, 'udemy1/update_profile.html', {'form': form})
-=======
+
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
->>>>>>> dev
