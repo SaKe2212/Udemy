@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from .models import *
 from .serializers import *
 from .forms import SignUpForm, ProfileForm
-
+from django.contrib.auth.decorators import login_required
 
 # ViewSets
 class CategoryViewSet(viewsets.ModelViewSet):
