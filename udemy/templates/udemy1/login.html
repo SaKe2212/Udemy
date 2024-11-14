@@ -1,0 +1,30 @@
+<h2>Вход</h2>
+<form method="POST" id="login-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Войти</button>
+</form>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // Предотвратить стандартную отправку формы
+
+        // Выполнить POST-запрос с помощью Fetch API
+        fetch('', {
+            method: 'POST',
+            body: new FormData(this),
+        })
+        .then(response => {
+            if (response.ok) {
+                // Если вход успешен, перенаправить на главную страницу
+                window.location.href = "/";  // или на другой URL, например, '/home'
+            } else {
+                alert("Ошибка входа!");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+

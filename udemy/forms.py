@@ -6,7 +6,7 @@ class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
     class Meta:
-        model = CustomUser  # Используйте кастомную модель
+        model = CustomUser
         fields = ('username', 'email', 'password1', 'password2')
 
     def save(self, commit=True):
@@ -22,4 +22,4 @@ from .models import CustomUser
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name','birth_date']  # Укажи необходимые поля
+        fields = ['first_name', 'last_name','birth_date']

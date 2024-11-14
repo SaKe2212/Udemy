@@ -1,7 +1,7 @@
-from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.contrib.auth import get_user_model
+from django.db import models
+from django.conf import settings
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
@@ -138,11 +138,8 @@ class Banner(models.Model):
     def __str__(self):
         return self.title
 
-from django.contrib.auth import get_user_model
-from django.db import models
-from django.conf import settings
 
-User = get_user_model()  # Получаем пользовательскую модель
+User = get_user_model()
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

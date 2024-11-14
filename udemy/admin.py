@@ -63,7 +63,6 @@ admin.site.register(Enrollment)
 admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(Order)
-
 admin.site.register(CustomUser)
 admin.site.register(Basket)
 admin.site.register(Teacher)
