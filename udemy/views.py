@@ -164,10 +164,6 @@ def update_profile(request):
     return render(request, 'udemy1/update_profile.html', {'form': form, 'profile': profile})
 
 
-
-
-
-
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
