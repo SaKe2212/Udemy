@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .profile-info p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Profile</h1>
+
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ profile.user.username }}</p>
+
+            <p><strong>Email:</strong> {{ profile.user.email }}</p>
+
+            <p><strong>Name:</strong> {{ profile.last_name }}</p>
+
+            <p><strong>Birth Date:</strong> {{ profile.birth_date }}</p>
+        </div>
+
+        <a href="{% url 'home' %}"><button>Back to Home</button></a>  <!-- Кнопка для возврата на главную страницу -->
+    </div>
+</body>
+</html>
