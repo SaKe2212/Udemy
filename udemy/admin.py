@@ -4,9 +4,10 @@ from .models import (
     Instructor, Student, Enrollment, Cart, CartItem, Order,CustomUser,
     Instructor, Student, Enrollment, Cart, CartItem, Order,Basket,Teacher
 
+
 )
 from modeltranslation.admin import TranslationAdmin
-
+from .models import Course
 class Media:
     js = (
         'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
@@ -55,6 +56,7 @@ class ReviewAdmin(TranslationAdmin):
 class BannerAdmin(TranslationAdmin):
     class Media(Media):
         pass
+
 
 
 admin.site.register(Instructor)

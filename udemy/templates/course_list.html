@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course List</title>
+</head>
+<body>
+    <h1>We course</h1>
+    <div>
+        {% for course in courses %}
+            <div>
+                <h2>{{ course.title }}</h2>
+                <a href="{{ coursis.link }}">
+                    <img src="{{ coursis.image_url }}" alt="{{ coursis.title }}" style="width:200px; height:auto;">
+                </a>
+                <p>{{ course.description }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

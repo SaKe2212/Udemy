@@ -5,7 +5,6 @@ from .views import (
     CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView,
     BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView
 )
-
 urlpatterns = [
     # Category paths
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
@@ -29,6 +28,7 @@ urlpatterns = [
 
     # Course paths
     path('courses/', CourseViewSet.as_view({'get': 'list', 'post': 'create'}), name='course_list'),
+
     path('courses/<int:pk>/', CourseViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='course_detail'),
 
     # Basket paths
@@ -72,4 +72,5 @@ urlpatterns = [
     # Teacher paths
     path('teachers/', TeacherViewSet.as_view({'get': 'list', 'post': 'create'}), name='teacher_list'),
     path('teachers/<int:pk>/', TeacherViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='teacher_detail'),
+
 ]
