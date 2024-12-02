@@ -106,7 +106,7 @@ class Enrollment(models.Model):
 
 class Cart(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='carts')
-    courses = models.ManyToManyField(Course, through='CartItem', related_name='carts')
+    courses = models.ManyToManyField(Course, through='CartItem', related_name='cartss')
 
     def __str__(self):
         return f"{self.student.user.username}'s Cart"

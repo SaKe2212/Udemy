@@ -6,9 +6,11 @@ from django.views.generic import TemplateView
 from .serializers import *
 from .forms import SignUpForm
 from .models import Profile
-from django.shortcuts import render, redirect
 from .forms import ProfileForm
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 
 
@@ -105,7 +107,6 @@ class BannerListCreateView(generics.ListCreateAPIView):
     serializer_class = BannerSerializer
 
 
-
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -171,3 +172,44 @@ class TeacherViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
+@login_required
+def change_name(request):
+    if request.method == 'POST':
+        new_name = request.POST.get('new_name')
+        if new_name:
+            request.user.last_name = new_name
+            request.user.save()
+        return redirect('update_profile')
+    return render(request, 'udemy1/change_name.html')
+
+
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if new_password == confirm_password:
+            request.user.set_password(new_password)
+            request.user.save()
+            update_session_auth_hash(request, request.user)
+            messages.success(request, "Your password has been changed successfully.")
+            return redirect('update_profile')
+        else:
+            messages.error(request, "Passwords do not match. Please try again.")
+    return render(request, 'udemy1/change_password.html')
+
+@login_required
+def change_email(request):
+    if request.method == 'POST':
+        new_email = request.POST.get('new_email')
+        if new_email and new_email != request.user.email:
+            request.user.email = new_email
+            request.user.save()
+            messages.success(request, 'Your email has been updated!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid email or email is the same as the current one.')
+    return render(request, 'udemy1/change_email.html')

@@ -5,6 +5,10 @@ from .views import (
     CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView,
     BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView
 )
+<<<<<<< HEAD
+=======
+from .views import ( change_name, change_password, change_email)
+>>>>>>> aec8340 (add and remote olso new version)
 urlpatterns = [
     # Category paths
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
@@ -68,6 +72,9 @@ urlpatterns = [
     # Profile paths
     path('profile/', profile_view, name='profile'),
     path('update_profile/', update_profile, name='update_profile'),
+    path('change-name/', change_name, name='change_name'),
+    path('change-password/', change_password, name='change_password'),
+    path('change_email/', change_email, name='change_email'),
 
     # Teacher paths
     path('teachers/', TeacherViewSet.as_view({'get': 'list', 'post': 'create'}), name='teacher_list'),
