@@ -11,7 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
+from .forms import LoginForm
+from django.contrib.auth.forms import authenticate
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -123,15 +124,22 @@ def register(request):
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')  # или куда нужно перенаправить
+            else:
+                messages.error(request, 'Invalid credentials')
+        else:
+            messages.error(request, 'Form is not valid')
     else:
-        form = AuthenticationForm()
-        return render(request, 'udemy1/login.html', {'form': form})
+        form = LoginForm()
 
+    return render(request, 'udemy1/login.html', {'form': form})
 
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'

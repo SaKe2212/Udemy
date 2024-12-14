@@ -7,8 +7,6 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     birth_date = models.DateField(null=True, blank=True)
 
-
-
     def __str__(self):
         return self.username
 
