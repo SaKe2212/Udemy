@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Course,Basket,Lesson, Review, Enrollment, Cart, CartItem, Order,Banner,Teacher
 from django.contrib.auth.models import User
+from .models import Profile
+from django.contrib.auth.forms import authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -121,3 +123,21 @@ class TeacherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Profile
+        fields = ('user', 'first_name', 'last_name', 'birth_date')
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=100)
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        user = authenticate(username=attrs['username'], password=attrs['password'])
+        if not user:
+            raise serializers.ValidationError("Invalid username or password.")
+        return user

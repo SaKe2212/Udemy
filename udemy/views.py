@@ -1,11 +1,8 @@
 from rest_framework import viewsets, permissions, generics
-from rest_framework.response import Response
 from django.contrib.auth import login
-from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic import TemplateView
 from .serializers import *
 from .forms import SignUpForm
-from .models import Profile
 from .forms import ProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
@@ -13,6 +10,13 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import LoginForm
 from django.contrib.auth.forms import authenticate
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveUpdateAPIView
+from .models import Profile
+from .serializers import ProfileSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -221,3 +225,30 @@ def change_email(request):
         else:
             messages.error(request, 'Invalid email or email is the same as the current one.')
     return render(request, 'udemy1/change_email.html')
+
+
+class RegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        form = SignUpForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
+            login(request, user)
+            return Response({"message": "User logged in successfully"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileView(RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return Profile.objects.get(user=self.request.user)
