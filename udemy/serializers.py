@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Course,Basket,Lesson, Review, Enrollment, Cart, CartItem, Order,Banner,Teacher
 from django.contrib.auth.models import User
+from .models import Profile
+from django.contrib.auth.forms import authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,13 +28,13 @@ class PopularTopicSerializer(serializers.ModelSerializer):
         model = PopularTopic
         fields ='__all__'
 
-
 class InstructorSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = serializers.StringRelatedField()
 
     class Meta:
         model = Instructor
-        fields = ['id', 'user', 'bio', 'profile_picture', 'rating', 'experience']
+        fields = ['id', 'user', 'bio', 'profile_picture']
+
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -93,8 +95,8 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    student = StudentSerializer()
-    courses = CartItemSerializer(source='cartitem_set', many=True)
+    student = serializers.PrimaryKeyRelatedField(read_only=True)
+    courses = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Cart
@@ -121,3 +123,21 @@ class TeacherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Profile
+        fields = ('user', 'first_name', 'last_name', 'birth_date')
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=100)
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        user = authenticate(username=attrs['username'], password=attrs['password'])
+        if not user:
+            raise serializers.ValidationError("Invalid username or password.")
+        return user

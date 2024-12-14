@@ -1,15 +1,22 @@
 from rest_framework import viewsets, permissions, generics
-from rest_framework.response import Response
 from django.contrib.auth import login
-from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic import TemplateView
 from .serializers import *
 from .forms import SignUpForm
-from .models import Profile
-from django.shortcuts import render, redirect
 from .forms import ProfileForm
-
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import LoginForm
+from django.contrib.auth.forms import authenticate
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveUpdateAPIView
+from .models import Profile
+from .serializers import ProfileSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -105,7 +112,6 @@ class BannerListCreateView(generics.ListCreateAPIView):
     serializer_class = BannerSerializer
 
 
-
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -122,15 +128,22 @@ def register(request):
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')  # или куда нужно перенаправить
+            else:
+                messages.error(request, 'Invalid credentials')
+        else:
+            messages.error(request, 'Form is not valid')
     else:
-        form = AuthenticationForm()
-        return render(request, 'udemy1/login.html', {'form': form})
+        form = LoginForm()
 
+    return render(request, 'udemy1/login.html', {'form': form})
 
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'
@@ -171,3 +184,71 @@ class TeacherViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
+@login_required
+def change_name(request):
+    if request.method == 'POST':
+        new_name = request.POST.get('new_name')
+        if new_name:
+            request.user.last_name = new_name
+            request.user.save()
+        return redirect('update_profile')
+    return render(request, 'udemy1/change_name.html')
+
+
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if new_password == confirm_password:
+            request.user.set_password(new_password)
+            request.user.save()
+            update_session_auth_hash(request, request.user)
+            messages.success(request, "Your password has been changed successfully.")
+            return redirect('update_profile')
+        else:
+            messages.error(request, "Passwords do not match. Please try again.")
+    return render(request, 'udemy1/change_password.html')
+
+@login_required
+def change_email(request):
+    if request.method == 'POST':
+        new_email = request.POST.get('new_email')
+        if new_email and new_email != request.user.email:
+            request.user.email = new_email
+            request.user.save()
+            messages.success(request, 'Your email has been updated!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid email or email is the same as the current one.')
+    return render(request, 'udemy1/change_email.html')
+
+
+class RegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        form = SignUpForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
+            login(request, user)
+            return Response({"message": "User logged in successfully"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileView(RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return Profile.objects.get(user=self.request.user)

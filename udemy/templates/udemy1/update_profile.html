@@ -26,44 +26,88 @@
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 20px;
             color: #333;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: left;
+            position: relative;
         }
 
         label {
             font-weight: bold;
             color: #555;
+            font-size: 14px;
         }
 
         input[type="text"],
         input[type="email"],
-        input[type="date"] {
+        input[type="date"],
+        input[type="password"] {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
             margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .password-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .toggle-password {
+            font-size: 16px;
+            color: #007bff;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            margin-left: 5px;
         }
 
         button {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             background-color: #007bff;
             color: #fff;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
         }
 
         button:hover {
             background-color: #0056b3;
+        }
+
+        .change-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .change-name-button,
+        .change-password-button,
+        .change-email-button {
+            font-size: 12px;
+            color: blue;
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .change-name-button:hover,
+        .change-password-button:hover,
+        .change-email-button:hover {
+            color: #0056b3;
         }
     </style>
 </head>
@@ -74,27 +118,44 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="email">New Email:</label>
-                <input type="email" id="email" name="email" value="{{ profile.user.email }}" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ profile.user.email }}" readonly required>
+                <button class="change-email-button" type="button" onclick="window.location.href='{% url 'change_email' %}'">
+                    Tap to change email
+                </button>
             </div>
 
             <div class="form-group">
-                <label for="first_name">Last Name:</label>
-                <input type="text" id="first_name" name="first_name" value="{{ profile.user.first_name }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="last_name">New Name:</label>
+                <label for="last_name">Name:</label>
                 <input type="text" id="last_name" name="last_name" value="{{ profile.user.last_name }}" required>
+                <button class="change-name-button" type="button" onclick="window.location.href='{% url 'change_name' %}'">
+                    Tap to change name
+                </button>
             </div>
 
             <div class="form-group">
-                <label for="birth_date">Birth Date:</label>
-                <input type="date" id="birth_date" name="birth_date" value="{{ profile.birth_date }}" required>
+                <label for="password">Password:</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" value="{{ user.password }}" readonly required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('password')">👁️</button>
+                </div>
+            </div>
+
+            <div class="change-buttons">
+                <button type="button" class="change-password-button" onclick="window.location.href='{% url 'change_password' %}'">Change Password</button>
             </div>
 
             <button type="submit">Save changes</button>
         </form>
     </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const type = field.type === 'password' ? 'text' : 'password';
+            field.type = type;
+        }
+    </script>
 </body>
 </html>
+
