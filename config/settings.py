@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-gigff)=(os801e#h8z6(6q!_()-v1f9m5zsk7xohl&l1b#77^_'
+SECRET_KEY = config('SECRET_KEY')
 DEBUG = True
 ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'udemy.CustomUser'
@@ -24,8 +25,12 @@ INSTALLED_APPS = [
 ]
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 

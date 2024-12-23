@@ -6,7 +6,7 @@ from .views import (
     BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView
 )
 
-from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView)
+from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView, UserDataView)
 urlpatterns = [
     # Category paths
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
@@ -81,5 +81,6 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/profile/', ProfileView.as_view(), name='profile'),
+    path('api/user-data/', UserDataView.as_view(), name='user-data'),
 
 ]

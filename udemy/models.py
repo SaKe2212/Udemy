@@ -6,6 +6,7 @@ from django.conf import settings
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     birth_date = models.DateField(null=True, blank=True)
+    additional_field = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.username

@@ -1,8 +1,6 @@
-from .models import Category, Cupcategory, PopularTopic, Course, Lesson, Review, Banner
-from modeltranslation.translator import TranslationOptions, register
+from .models import Cupcategory, PopularTopic, Course, Lesson, Review, Banner, Category
 
 from modeltranslation.translator import TranslationOptions, register
-from .models import Category
 
 @register(Category)
 class CategoryTranslationOptions(TranslationOptions):
