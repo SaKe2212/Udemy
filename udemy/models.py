@@ -145,7 +145,8 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)  # Поле для даты рождения
-
+    headline = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
@@ -163,3 +164,9 @@ class Teacher(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
+
+class Description(models.Model):
+    text = models.TextField(default="Это описание, которое можно изменить.")
+
+    def __str__(self):
+        return self.text

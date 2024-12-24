@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Изменение описания</title>
+</head>
+<body>
+    <h1>Изменение описания</h1>
+    <p>Текущее описание:</p>
+    <p>{{ description.text }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="description" rows="4" cols="50">{{ description.text }}</textarea><br><br>
+        <button type="submit">Сохранить</button>
+    </form>
+</body>
+</html>

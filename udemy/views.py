@@ -1,21 +1,19 @@
-from rest_framework import viewsets, permissions, generics
-from django.contrib.auth import login
-from django.views.generic import TemplateView
-from .models import CustomUser
-from .serializers import *
-from .forms import SignUpForm, ProfileForm, LoginForm
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import update_session_auth_hash, authenticate
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from rest_framework import status
+from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import RetrieveUpdateAPIView
-from .models import Profile
-from .serializers import ProfileSerializer
+from django.contrib.auth import login, authenticate
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from .models import CustomUser, Profile, Description, Category, Cupcategory, PopularTopic, Instructor, Student, Course, Basket, Lesson, Review, Enrollment, Cart, CartItem, Order, Banner, Teacher
+from .serializers import CategorySerializer, CupcategorySerializer, PopularTopicSerializer, InstructorSerializer, StudentSerializer, CourseSerializer, BasketSerializer, LessonSerializer, ReviewSerializer, EnrollmentSerializer, CartSerializer, CartItemSerializer, OrderSerializer, BannerSerializer, TeacherSerializer, ProfileSerializer, UserSerializer, LoginSerializer
+from .forms import SignUpForm, ProfileForm, LoginForm
 
+
+
+# API views
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -95,34 +93,99 @@ class BannerListCreateView(generics.ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
 
+# User registration API
+class RegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        form = SignUpForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# User login API
+class LoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
+            login(request, user)
+            return Response({"message": "User logged in successfully"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Profile API
+class ProfileView(RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return Profile.objects.get(user=self.request.user)
+
+class UpdateUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data
+        new_email = data.get("email")
+        if new_email and new_email != user.email:
+            user.email = new_email
+        new_username = data.get("username")
+        if new_username and new_username != user.username:
+            user.username = new_username
+        new_password = data.get("password")
+        confirm_password = data.get("confirm_password")
+        if new_password and new_password == confirm_password:
+            user.set_password(new_password)
+            update_session_auth_hash(request, user)
+        elif new_password and new_password != confirm_password:
+            return Response({"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
+        user.save()
+        return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
+
+# User data API
+class UserDataView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+# Description API
+class UpdateDescriptionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        description = Description.objects.first()
+        serializer = DescriptionSerializer(description)
+        return Response(serializer.data)
+
+    def post(self, request):
+        description = Description.objects.first()
+        new_text = request.data.get("description")
+        if new_text:
+            description.text = new_text
+            description.save()
+            return Response({"message": "Description updated successfully"})
+        return Response({"error": "Description not updated"}, status=status.HTTP_400_BAD_REQUEST)
+
+# Views for registration, login, and profile management
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            # Создание пользователя и его сохранение в базе данных
             user = form.save()
-
-            # Логиним пользователя сразу после регистрации
             login(request, user)
-
-            # Проверка, существует ли профиль, если нет, то создаем
             profile, created = Profile.objects.get_or_create(user=user)
-
-            # Если необходимо обновить какие-то данные профиля (например, дополнительные поля),
-            # то можно сделать это здесь, после его создания
             if created:
-                # Если профиль только что был создан, возможно, нужно задать дополнительные значения
-                profile.some_field = 'default_value'  # Пример: добавьте дефолтные значения для профиля
+                profile.some_field = 'default_value'
                 profile.save()
-
-            # Перенаправляем пользователя на главную страницу или другую страницу
             return redirect('home')
         else:
-            # Если форма невалидна, выводим сообщение об ошибке
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = SignUpForm()  # Если запрос GET, создаем пустую форму
-
+        form = SignUpForm()
     return render(request, 'udemy1/register.html', {'form': form})
 
 def login_view(request):
@@ -131,29 +194,21 @@ def login_view(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-
-            # Проверка существования пользователя в базе данных
             user = CustomUser.objects.filter(username=username).first()
-
-            # Если пользователя нет в базе, то показываем ошибку
             if user is None:
                 messages.error(request, 'User does not exist. Please register first.')
-                return redirect('register')  # Перенаправляем на страницу регистрации
-
-            # Аутентификация пользователя
+                return redirect('register')
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Перенаправление на главную страницу
+                return redirect('home')
             else:
-                messages.error(request, 'Invalid credentials')  # Неверный пароль
+                messages.error(request, 'Invalid credentials')
         else:
             messages.error(request, 'Form is not valid')
     else:
         form = LoginForm()
-
     return render(request, 'udemy1/login.html', {'form': form})
-
 
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'
@@ -172,18 +227,16 @@ def profile_view(request):
 def update_profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
     if request.method == "POST":
-        form = ProfileForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
+        if any(field in request.POST for field in ['headline', 'description', 'email', 'first_name', 'last_name']):
+            profile.headline = request.POST.get('headline', profile.headline)
+            profile.description = request.POST.get('description', profile.description)
+            profile.user.email = request.POST.get('email', profile.user.email)
+            profile.user.first_name = request.POST.get('first_name', profile.user.first_name)
+            profile.user.last_name = request.POST.get('last_name', profile.user.last_name)
+            profile.user.save()
+            profile.save()
             return redirect('home')
-    else:
-        form = ProfileForm(instance=profile)
-    return render(request, 'udemy1/update_profile.html', {'form': form, 'profile': profile})
-
-class TeacherViewSet(viewsets.ModelViewSet):
-    queryset = Teacher.objects.all()
-    serializer_class = TeacherSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    return render(request, 'udemy1/update_profile.html', {'profile': profile})
 
 @login_required
 def change_name(request):
@@ -192,6 +245,7 @@ def change_name(request):
         if new_name:
             request.user.last_name = new_name
             request.user.save()
+            request.name.save()
         return redirect('update_profile')
     return render(request, 'udemy1/change_name.html')
 
@@ -223,67 +277,11 @@ def change_email(request):
             messages.error(request, 'Invalid email or email is the same as the current one.')
     return render(request, 'udemy1/change_email.html')
 
-class RegisterView(APIView):
-    def post(self, request, *args, **kwargs):
-        form = SignUpForm(request.data)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
-        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class LoginView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data
-            login(request, user)
-            return Response({"message": "User logged in successfully"})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class ProfileView(RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return Profile.objects.get(user=self.request.user)
-
-class UpdateUserView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        data = request.data
-
-        # Проверяем и обновляем email
-        new_email = data.get("email")
-        if new_email and new_email != user.email:
-            user.email = new_email
-
-        # Проверяем и обновляем username
-        new_username = data.get("username")
-        if new_username and new_username != user.username:
-            user.username = new_username
-
-        # Проверяем и обновляем пароль
-        new_password = data.get("password")
-        confirm_password = data.get("confirm_password")
-        if new_password and new_password == confirm_password:
-            user.set_password(new_password)
-            update_session_auth_hash(request, user)
-        elif new_password and new_password != confirm_password:
-            return Response({"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Сохраняем изменения
-        user.save()
-        return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
-
-
-
-class UserDataView(APIView):
-    permission_classes = [IsAuthenticated]  # Требует аутентификации
-
-    def get(self, request):
-        user = request.user  # Получаем текущего пользователя
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+@login_required
+def change_headline(request):
+    if request.method == "POST":
+        profile = request.user.profile
+        profile.headline = request.POST.get('headline')
+        profile.save()
+        return redirect('edit_profile')
+    return render(request, 'change_headline.html')

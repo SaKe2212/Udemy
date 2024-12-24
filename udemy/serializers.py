@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from .models import Profile
 from django.contrib.auth.forms import authenticate
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -129,7 +128,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('user', 'first_name', 'last_name', 'birth_date''headline', 'description')
+        fields = ('user', 'first_name', 'last_name', 'birth_date','headline', 'description')
 
 
 class LoginSerializer(serializers.Serializer):
@@ -141,3 +140,4 @@ class LoginSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError("Invalid username or password.")
         return user
+

@@ -6,7 +6,7 @@ from .views import (
     BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView
 )
 
-from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView, UserDataView)
+from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView, UserDataView,change_headline, update_description)
 urlpatterns = [
     # Category paths
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
@@ -73,7 +73,8 @@ urlpatterns = [
     path('change-name/', change_name, name='change_name'),
     path('change-password/', change_password, name='change_password'),
     path('change_email/', change_email, name='change_email'),
-
+    path('change_headline/', change_headline, name='change_headline'),
+    path('change_description/', update_description, name='change_description'),
     # Teacher paths
     path('teachers/', TeacherViewSet.as_view({'get': 'list', 'post': 'create'}), name='teacher_list'),
     path('teachers/<int:pk>/', TeacherViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='teacher_detail'),
