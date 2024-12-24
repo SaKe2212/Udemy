@@ -3,6 +3,7 @@ from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Co
 from django.contrib.auth.models import User
 from .models import Profile
 from django.contrib.auth.forms import authenticate
+from .models import Description
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -141,3 +142,13 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid username or password.")
         return user
 
+
+class DescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Description
+        fields = ['id', 'user', 'text']  # или любые другие поля, которые хотите сериализовать
+
+    def update(self, instance, validated_data):
+        instance.text = validated_data.get('text', instance.text)
+        instance.save()
+        return instance

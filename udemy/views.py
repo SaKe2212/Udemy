@@ -10,6 +10,8 @@ from django.contrib.auth import update_session_auth_hash
 from .models import CustomUser, Profile, Description, Category, Cupcategory, PopularTopic, Instructor, Student, Course, Basket, Lesson, Review, Enrollment, Cart, CartItem, Order, Banner, Teacher
 from .serializers import CategorySerializer, CupcategorySerializer, PopularTopicSerializer, InstructorSerializer, StudentSerializer, CourseSerializer, BasketSerializer, LessonSerializer, ReviewSerializer, EnrollmentSerializer, CartSerializer, CartItemSerializer, OrderSerializer, BannerSerializer, TeacherSerializer, ProfileSerializer, UserSerializer, LoginSerializer
 from .forms import SignUpForm, ProfileForm, LoginForm
+from rest_framework.generics import RetrieveUpdateAPIView
+from django.views.generic import TemplateView
 
 
 
@@ -285,3 +287,8 @@ def change_headline(request):
         profile.save()
         return redirect('edit_profile')
     return render(request, 'change_headline.html')
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
