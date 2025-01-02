@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     birth_date = models.DateField(null=True, blank=True)
     additional_field = models.CharField(max_length=100, blank=True, null=True)
-
+    bio = models.TextField(null=True, blank=True)
     def __str__(self):
         return self.username
 
@@ -141,12 +141,16 @@ class Banner(models.Model):
 User = get_user_model()
 
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)  # Поле для даты рождения
     headline = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+    bio = models.TextField(null=True, blank=True)
+
+
+
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
@@ -170,3 +174,15 @@ class Description(models.Model):
 
     def __str__(self):
         return self.text
+
+
+
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Автор отзыва
+    content = models.TextField()  # Текст отзыва
+    rating = models.PositiveIntegerField(default=1)  # Рейтинг от 1 до 5
+    created_at = models.DateTimeField(auto_now_add=True)  # Дата создания
+    updated_at = models.DateTimeField(auto_now=True)  # Дата обновления
+
+    def __str__(self):
+        return f"{self.user.username} ({self.rating}): {self.content[:20]}"

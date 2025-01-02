@@ -12,6 +12,12 @@ from .serializers import CategorySerializer, CupcategorySerializer, PopularTopic
 from .forms import SignUpForm, ProfileForm, LoginForm
 from rest_framework.generics import RetrieveUpdateAPIView
 from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404
+from .forms import FeedbackForm
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Feedback
 
 
 
@@ -215,8 +221,33 @@ def login_view(request):
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'
 
+@csrf_exempt
 def profile_view(request):
     profile = Profile.objects.get(user=request.user)
+
+    # Обработка API-запроса (JSON)
+    if request.headers.get('Content-Type') == 'application/json':
+        if request.method == 'GET':
+            # Вернуть данные профиля в формате JSON
+            return JsonResponse({
+                'username': request.user.username,
+                'email': profile.email,
+                'first_name': profile.first_name,
+                'last_name': profile.last_name,
+                'bio': profile.bio,  # Пример дополнительного поля
+            })
+        elif request.method == 'POST':
+            try:
+                data = json.loads(request.body)
+                profile.first_name = data.get('first_name', profile.first_name)
+                profile.last_name = data.get('last_name', profile.last_name)
+                profile.bio = data.get('bio', profile.bio)  # Пример
+                profile.save()
+                return JsonResponse({'status': 'success', 'message': 'Profile updated successfully!'})
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    # Обработка HTML-страницы
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
@@ -224,7 +255,9 @@ def profile_view(request):
             return redirect('home')
     else:
         form = ProfileForm(instance=profile)
+
     return render(request, 'udemy1/profile.html', {'form': form, 'profile': profile})
+
 
 def update_profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -285,10 +318,45 @@ def change_headline(request):
         profile = request.user.profile
         profile.headline = request.POST.get('headline')
         profile.save()
-        return redirect('edit_profile')
+        return redirect('update_profile')
     return render(request, 'change_headline.html')
+
+
+
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+@login_required
+def feedback_list(request):
+    feedbacks = Feedback.objects.all().order_by('-created_at')  # Все отзывы
+    return render(request, 'udemy1/feedback_list.html', {'feedbacks': feedbacks})
+
+def create_feedback(request):
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user
+            feedback.save()
+            return redirect('feedback_list')
+    else:
+        form = FeedbackForm()
+    return render(request, 'udemy1/create_feedback.html', {'form': form})
+
+@login_required
+def delete_feedback(request, feedback_id):
+    feedback = get_object_or_404(Feedback, id=feedback_id, user=request.user)
+    feedback.delete()
+    return redirect('feedback_list')
+
+@login_required
+def update_feedback(request, feedback_id):
+    feedback = get_object_or_404(Feedback, id=feedback_id, user=request.user)
+    if request.method == 'POST':
+        feedback.content = request.POST.get('content')
+        feedback.rating = int(request.POST.get('rating', feedback.rating))
+        feedback.save()
+        return redirect('feedback_list')
+    return render(request, 'udemy1/update_feedback.html', {'feedback': feedback})

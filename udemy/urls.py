@@ -1,12 +1,29 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     CategoryViewSet, CupcategoryViewSet, PopularTopicViewSet, InstructorViewSet,
     StudentViewSet, CourseViewSet, LessonViewSet, ReviewViewSet, EnrollmentViewSet,
     CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView,
-    BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView
+    BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView, UserDataView
 )
+from rest_framework.routers import DefaultRouter
+from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView,update_feedback,delete_feedback, create_feedback,feedback_list)
+router = DefaultRouter()
 
-from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView, UserDataView,change_headline, UpdateDescriptionView)
+# Подключаем маршруты для ViewSet'ов
+router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'cupcategories', CupcategoryViewSet, basename='cupcategory')
+router.register(r'popular-topics', PopularTopicViewSet, basename='popular-topic')
+router.register(r'instructors', InstructorViewSet, basename='instructor')
+router.register(r'students', StudentViewSet, basename='student')
+router.register(r'courses', CourseViewSet, basename='course')
+router.register(r'baskets', BasketListViewSet, basename='basket')
+router.register(r'lessons', LessonViewSet, basename='lesson')
+router.register(r'reviews', ReviewViewSet, basename='review')
+router.register(r'enrollments', EnrollmentViewSet, basename='enrollment')
+router.register(r'cart', CartViewSet, basename='cart')
+router.register(r'cart-items', CartItemViewSet, basename='cart-item')
+router.register(r'orders', OrderViewSet, basename='order')
+
 urlpatterns = [
     # Category paths
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
@@ -68,20 +85,30 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
 
     # Profile paths
-    path('profile/', profile_view, name='profile'),
+    path('profile_view/', profile_view, name='profile'),
     path('update_profile/', update_profile, name='update_profile'),
     path('change-name/', change_name, name='change_name'),
     path('change-password/', change_password, name='change_password'),
     path('change_email/', change_email, name='change_email'),
-    path('change_headline/', change_headline, name='change_headline'),
-    path('change_description/', UpdateDescriptionView.as_view, name='change_description'),
+
     # Teacher paths
     path('teachers/', TeacherViewSet.as_view({'get': 'list', 'post': 'create'}), name='teacher_list'),
     path('teachers/<int:pk>/', TeacherViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='teacher_detail'),
 
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
-    path('api/profile/', ProfileView.as_view(), name='profile'),
+     path('api/profile/', ProfileView.as_view(), name='profile'),
     path('api/user-data/', UserDataView.as_view(), name='user-data'),
+
+     path('api/', include(router.urls)),  # Все маршруты ViewSet
+     path('api/banners/', BannerListCreateView.as_view(), name='banner-list-create'),
+
+    path('feedback/', feedback_list, name='feedback_list'),
+    path('feedback/create/', create_feedback, name='create_feedback'),
+    path('feedback/<int:feedback_id>/delete/', delete_feedback, name='delete_feedback'),
+    path('feedback/<int:feedback_id>/update/', update_feedback, name='update_feedback'),
+
+
+
 
 ]
