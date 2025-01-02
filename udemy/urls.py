@@ -5,8 +5,12 @@ from .views import (
     CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView,
     BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView, UserDataView
 )
+from . import views
 from rest_framework.routers import DefaultRouter
-from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView,update_feedback,delete_feedback, create_feedback,feedback_list)
+from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView,update_feedback,delete_feedback,
+create_feedback,feedback_list,feedback_list_api,delete_feedback_api,create_feedback_api,update_feedback_api
+
+                     )
 router = DefaultRouter()
 
 # Подключаем маршруты для ViewSet'ов
@@ -85,7 +89,7 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
 
     # Profile paths
-    path('profile_view/', profile_view, name='profile'),
+    path('profile/', profile_view, name='profile'),
     path('update_profile/', update_profile, name='update_profile'),
     path('change-name/', change_name, name='change_name'),
     path('change-password/', change_password, name='change_password'),
@@ -97,18 +101,19 @@ urlpatterns = [
 
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
-     path('api/profile/', ProfileView.as_view(), name='profile'),
+    path('api/profile/', views.ProfileView.as_view(), name='api/profile'),
     path('api/user-data/', UserDataView.as_view(), name='user-data'),
 
-     path('api/', include(router.urls)),  # Все маршруты ViewSet
-     path('api/banners/', BannerListCreateView.as_view(), name='banner-list-create'),
+    path('api/', include(router.urls)),
+    path('api/banners/', BannerListCreateView.as_view(), name='banner-list-create'),
+    path('api/feedbacks/', feedback_list_api, name='feedback_list_api'),
+    path('api/feedbacks/create/', create_feedback_api, name='create_feedback_api'),
+    path('api/feedbacks/<int:feedback_id>/update/', update_feedback_api, name='update_feedback_api'),
+    path('api/feedbacks/<int:feedback_id>/delete/', delete_feedback_api, name='delete_feedback_api'),
 
-    path('feedback/', feedback_list, name='feedback_list'),
-    path('feedback/create/', create_feedback, name='create_feedback'),
-    path('feedback/<int:feedback_id>/delete/', delete_feedback, name='delete_feedback'),
-    path('feedback/<int:feedback_id>/update/', update_feedback, name='update_feedback'),
-
-
-
+    path('feedbacks/', feedback_list, name='feedback_list'),
+    path('feedbacks/create/', create_feedback, name='create_feedback'),
+    path('feedbacks/<int:feedback_id>/update/', update_feedback, name='update_feedback'),
+    path('feedbacks/<int:feedback_id>/delete/', delete_feedback, name='delete_feedback'),
 
 ]

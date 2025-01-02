@@ -1,9 +1,6 @@
-from rest_framework import viewsets, permissions, generics, status
-from rest_framework.response import Response
+from rest_framework import viewsets, permissions, generics
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
@@ -18,6 +15,12 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Feedback
+from django.shortcuts import render, redirect
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from .serializers import FeedbackSerializer, DescriptionSerializer
 
 
 
@@ -328,11 +331,14 @@ class TeacherViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+
+# HTML views
 @login_required
 def feedback_list(request):
-    feedbacks = Feedback.objects.all().order_by('-created_at')  # Все отзывы
+    feedbacks = Feedback.objects.all().order_by('-created_at')  # All feedbacks
     return render(request, 'udemy1/feedback_list.html', {'feedbacks': feedbacks})
 
+@login_required
 def create_feedback(request):
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
@@ -360,3 +366,43 @@ def update_feedback(request, feedback_id):
         feedback.save()
         return redirect('feedback_list')
     return render(request, 'udemy1/update_feedback.html', {'feedback': feedback})
+
+# API views
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def feedback_list_api(request):
+    feedbacks = Feedback.objects.all().order_by('-created_at')
+    serializer = FeedbackSerializer(feedbacks, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_feedback_api(request):
+    serializer = FeedbackSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_feedback_api(request, feedback_id):
+    feedback = Feedback.objects.filter(id=feedback_id, user=request.user).first()
+    if not feedback:
+        return Response({'error': 'Feedback not found or not authorized'}, status=status.HTTP_404_NOT_FOUND)
+    serializer = FeedbackSerializer(feedback, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_feedback_api(request, feedback_id):
+    feedback = Feedback.objects.filter(id=feedback_id, user=request.user).first()
+    if not feedback:
+        return Response({'error': 'Feedback not found or not authorized'}, status=status.HTTP_404_NOT_FOUND)
+    feedback.delete()
+    return Response({'message': 'Feedback deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+

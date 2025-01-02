@@ -3,7 +3,7 @@ from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Co
 from django.contrib.auth.models import User
 from .models import Profile
 from django.contrib.auth.forms import authenticate
-from .models import Description
+from .models import Description,Feedback
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -152,3 +152,10 @@ class DescriptionSerializer(serializers.ModelSerializer):
         instance.text = validated_data.get('text', instance.text)
         instance.save()
         return instance
+class FeedbackSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Feedback
+        fields = ['id', 'content', 'rating', 'created_at', 'user']
+        read_only_fields = ['id', 'created_at', 'user']
