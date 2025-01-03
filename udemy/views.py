@@ -181,7 +181,6 @@ class UpdateDescriptionView(APIView):
             return Response({"message": "Description updated successfully"})
         return Response({"error": "Description not updated"}, status=status.HTTP_400_BAD_REQUEST)
 
-# Views for registration, login, and profile management
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -228,10 +227,8 @@ class HomeView(TemplateView):
 def profile_view(request):
     profile = Profile.objects.get(user=request.user)
 
-    # Обработка API-запроса (JSON)
     if request.headers.get('Content-Type') == 'application/json':
         if request.method == 'GET':
-            # Вернуть данные профиля в формате JSON
             return JsonResponse({
                 'username': request.user.username,
                 'email': profile.email,
@@ -367,7 +364,7 @@ def update_feedback(request, feedback_id):
         return redirect('feedback_list')
     return render(request, 'udemy1/update_feedback.html', {'feedback': feedback})
 
-# API views
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def feedback_list_api(request):

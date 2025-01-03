@@ -28,7 +28,7 @@
         h1 {
             font-size: 22px;
             margin-bottom: 20px;
-            color: #333;
+            color: 444;
         }
 
         .form-group {
@@ -39,7 +39,7 @@
 
         label {
             font-weight: bold;
-            color: #555;
+            color: 898;
             font-size: 14px;
         }
 
@@ -112,7 +112,7 @@
             <!-- Name -->
             <div class="form-group">
                 <label for="last_name">Name:</label>
-                <input type="text" id="last_name" name="last_name" value="{{ profile.user.last_name }}" required>
+                <input type="text" id="last_name" name="last_name" value="{{ profile.user.last_name }}" readonly required>
                 <button class="change-name-button" type="button" onclick="window.location.href='{% url 'change_name' %}'">
                     Tap to change name
                 </button>
