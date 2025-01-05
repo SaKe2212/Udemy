@@ -1,0 +1,14 @@
+<h1>Список продуктов</h1>
+<ul>
+    {% for product in products %}
+        <li>
+            {{ product.name }} - {{ product.price }}
+            <a href="{% url 'update_product' product.id %}">Редактировать</a>
+            <form action="{% url 'delete_product' product.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Удалить</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'add_product' %}">Добавить продукт</a>

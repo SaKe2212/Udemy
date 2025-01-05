@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
-from .models import Feedback
+from .models import Feedback, Product
 
 
 
@@ -38,3 +38,10 @@ class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
         fields = ['content', 'rating']
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'images', 'price', 'description',]
+

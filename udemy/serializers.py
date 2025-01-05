@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Course,Basket,Lesson, Review, Enrollment, Cart, CartItem, Order,Banner,Teacher
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Product
 from django.contrib.auth.forms import authenticate
 from .models import Description,Feedback
 
@@ -159,3 +159,9 @@ class FeedbackSerializer(serializers.ModelSerializer):
         model = Feedback
         fields = ['id', 'content', 'rating', 'created_at', 'user']
         read_only_fields = ['id', 'created_at', 'user']
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
