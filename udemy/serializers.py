@@ -3,7 +3,7 @@ from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Co
 from django.contrib.auth.models import User
 from .models import Profile, Product
 from django.contrib.auth.forms import authenticate
-from .models import Description,Feedback
+from .models import Description,Feedback, Expense
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -164,4 +164,10 @@ class FeedbackSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
+        fields = '__all__'
+
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense
         fields = '__all__'

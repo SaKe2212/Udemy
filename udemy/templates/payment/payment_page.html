@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <h1>Оплата</h1>
+    <form id="payment-form">
+        <label>
+            Имя:
+            <input type="text" id="user-name" required>
+        </label>
+        <br>
+        <label>
+            Сумма (в сомах):
+            <input type="number" id="amount" required>
+        </label>
+        <br>
+        <div id="card-element"><!-- Stripe ввод для карты --></div>
+        <div id="card-errors" role="alert" style="color: red;"></div>
+        <br>
+        <button type="submit">Оплатить</button>
+    </form>
+
+    <script>
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");  // Публичный ключ передается из views
+        const elements = stripe.elements();
+        const card = elements.create("card");
+        card.mount("#card-element");
+
+        const form = document.getElementById("payment-form");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const userName = document.getElementById("user-name").value.trim();
+            const amount = document.getElementById("amount").value.trim();
+
+            if (!userName || !amount) {
+                alert("Пожалуйста, заполните все поля!");
+                return;
+            }
+
+            try {
+                // Отправляем данные на сервер для создания PaymentIntent
+                const response = await fetch("/create-payment/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams({
+                        user_name: userName,
+                        amount: amount * 100, // Переводим сумму в тиыны
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ошибка на сервере. Проверьте данные.");
+                }
+
+                const data = await response.json();
+                const clientSecret = data.clientSecret;
+
+                if (!clientSecret) {
+                    throw new Error("Не удалось получить clientSecret. Проверьте сервер.");
+                }
+
+                // Подтверждаем платеж через Stripe
+                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: card,
+                        billing_details: { name: userName },
+                    },
+                });
+
+                if (error) {
+                    // Если ошибка, перенаправляем на страницу ошибки
+                    window.location.href = `/payment-error/?message=${encodeURIComponent(error.message)}`;
+                } else if (paymentIntent && paymentIntent.status === "succeeded") {
+                    // Если оплата успешна, перенаправляем на страницу успеха
+                    window.location.href = "/payment-success/";
+                } else {
+                    throw new Error("Оплата не завершена. Проверьте детали платежа.");
+                }
+            } catch (err) {
+                console.error(err.message);
+                alert(err.message); // Показываем сообщение об ошибке
+            }
+        });
+    </script>
+</body>
+</html>

@@ -4,75 +4,89 @@ from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-from .models import CustomUser, Profile, Description, Category, Cupcategory, PopularTopic, Instructor, Student, Course, Basket, Lesson, Review, Enrollment, Cart, CartItem, Order, Banner, Teacher
-from .serializers import CategorySerializer, CupcategorySerializer, PopularTopicSerializer, InstructorSerializer, StudentSerializer, CourseSerializer, BasketSerializer, LessonSerializer, ReviewSerializer, EnrollmentSerializer, CartSerializer, CartItemSerializer, OrderSerializer, BannerSerializer, TeacherSerializer, ProfileSerializer, UserSerializer, LoginSerializer
-from .forms import SignUpForm, ProfileForm, LoginForm
+from .models import CustomUser, Profile, Description, Category, Cupcategory, PopularTopic, Instructor, Student, Course, \
+    Basket, Lesson, Review, Enrollment, Cart, CartItem, Order, Banner, Teacher,Feedback,Expense,Product
+from .serializers import CategorySerializer, CupcategorySerializer, PopularTopicSerializer, InstructorSerializer, \
+    StudentSerializer, CourseSerializer, BasketSerializer, LessonSerializer, ReviewSerializer, EnrollmentSerializer, \
+    CartSerializer, CartItemSerializer, OrderSerializer, BannerSerializer, TeacherSerializer, ProfileSerializer, \
+    UserSerializer, LoginSerializer,FeedbackSerializer, DescriptionSerializer,ExpenseSerializer,ProductSerializer
+from .forms import SignUpForm, ProfileForm, LoginForm,FeedbackForm,ProductForm
 from rest_framework.generics import RetrieveUpdateAPIView
 from django.views.generic import TemplateView
-from .forms import FeedbackForm,ProductForm
 import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Feedback
-from rest_framework.decorators import  permission_classes
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .serializers import FeedbackSerializer, DescriptionSerializer
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Product
-from .forms import ProductForm
-from .serializers import ProductSerializer
+from rest_framework.viewsets import ModelViewSet
+import stripe
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Payment
 
 
-# API views
+
+
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+
 class CupcategoryViewSet(viewsets.ModelViewSet):
     queryset = Cupcategory.objects.all()
     serializer_class = CupcategorySerializer
 
+
 class PopularTopicViewSet(viewsets.ModelViewSet):
     queryset = PopularTopic.objects.all()
     serializer_class = PopularTopicSerializer
+
 
 class InstructorViewSet(viewsets.ModelViewSet):
     queryset = Instructor.objects.all()
     serializer_class = InstructorSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+
 class BasketListViewSet(viewsets.ModelViewSet):
     queryset = Basket.objects.all()
     serializer_class = BasketSerializer
+
 
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
@@ -86,6 +100,7 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(cart)
         return Response(serializer.data)
 
+
 class CartItemViewSet(viewsets.ModelViewSet):
     serializer_class = CartItemSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -97,16 +112,18 @@ class CartItemViewSet(viewsets.ModelViewSet):
         cart, created = Cart.objects.get_or_create(student__user=self.request.user)
         serializer.save(cart=cart)
 
+
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class BannerListCreateView(generics.ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
 
-# User registration API
+
 class RegisterView(APIView):
     def post(self, request, *args, **kwargs):
         form = SignUpForm(request.data)
@@ -116,7 +133,7 @@ class RegisterView(APIView):
             return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# User login API
+
 class LoginView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = LoginSerializer(data=request.data)
@@ -126,13 +143,14 @@ class LoginView(APIView):
             return Response({"message": "User logged in successfully"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Profile API
+
 class ProfileView(RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
+
 
 class UpdateUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -156,7 +174,7 @@ class UpdateUserView(APIView):
         user.save()
         return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
 
-# User data API
+
 class UserDataView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -165,7 +183,7 @@ class UserDataView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-# Description API
+
 class UpdateDescriptionView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -183,6 +201,7 @@ class UpdateDescriptionView(APIView):
             return Response({"message": "Description updated successfully"})
         return Response({"error": "Description not updated"}, status=status.HTTP_400_BAD_REQUEST)
 
+
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -199,6 +218,7 @@ def register(request):
     else:
         form = SignUpForm()
     return render(request, 'udemy1/register.html', {'form': form})
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -222,8 +242,10 @@ def login_view(request):
         form = LoginForm()
     return render(request, 'udemy1/login.html', {'form': form})
 
+
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'
+
 
 @csrf_exempt
 def profile_view(request):
@@ -236,7 +258,7 @@ def profile_view(request):
                 'email': profile.email,
                 'first_name': profile.first_name,
                 'last_name': profile.last_name,
-                'bio': profile.bio,  # Пример дополнительного поля
+                'bio': profile.bio,
             })
         elif request.method == 'POST':
             try:
@@ -249,7 +271,6 @@ def profile_view(request):
             except Exception as e:
                 return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
-    # Обработка HTML-страницы
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
@@ -275,6 +296,7 @@ def update_profile(request):
             return redirect('home')
     return render(request, 'udemy1/update_profile.html', {'profile': profile})
 
+
 @login_required
 def change_name(request):
     if request.method == 'POST':
@@ -284,6 +306,7 @@ def change_name(request):
             request.user.save()
         return redirect('update_profile')
     return render(request, 'udemy1/change_name.html')
+
 
 @login_required
 def change_password(request):
@@ -300,6 +323,7 @@ def change_password(request):
             messages.error(request, "Passwords do not match. Please try again.")
     return render(request, 'udemy1/change_password.html')
 
+
 @login_required
 def change_email(request):
     if request.method == 'POST':
@@ -313,6 +337,7 @@ def change_email(request):
             messages.error(request, 'Invalid email or email is the same as the current one.')
     return render(request, 'udemy1/change_email.html')
 
+
 @login_required
 def change_headline(request):
     if request.method == "POST":
@@ -321,7 +346,6 @@ def change_headline(request):
         profile.save()
         return redirect('update_profile')
     return render(request, 'change_headline.html')
-
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -334,7 +358,8 @@ class TeacherViewSet(viewsets.ModelViewSet):
 @login_required
 def feedback_list(request):
     feedbacks = Feedback.objects.all().order_by('-created_at')  # All feedbacks
-    return render(request, 'udemy1/feedback_list.html', {'feedbacks': feedbacks})
+    return render(request, 'feedback/feedback_list.html', {'feedbacks': feedbacks})
+
 
 @login_required
 def create_feedback(request):
@@ -347,13 +372,15 @@ def create_feedback(request):
             return redirect('feedback_list')
     else:
         form = FeedbackForm()
-    return render(request, 'udemy1/create_feedback.html', {'form': form})
+    return render(request, 'feedback/create_feedback.html', {'form': form})
+
 
 @login_required
 def delete_feedback(request, feedback_id):
     feedback = get_object_or_404(Feedback, id=feedback_id, user=request.user)
     feedback.delete()
     return redirect('feedback_list')
+
 
 @login_required
 def update_feedback(request, feedback_id):
@@ -363,7 +390,7 @@ def update_feedback(request, feedback_id):
         feedback.rating = int(request.POST.get('rating', feedback.rating))
         feedback.save()
         return redirect('feedback_list')
-    return render(request, 'udemy1/update_feedback.html', {'feedback': feedback})
+    return render(request, 'feedback/update_feedback.html', {'feedback': feedback})
 
 
 @api_view(['GET'])
@@ -373,6 +400,7 @@ def feedback_list_api(request):
     serializer = FeedbackSerializer(feedbacks, many=True)
     return Response(serializer.data)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_feedback_api(request):
@@ -381,6 +409,7 @@ def create_feedback_api(request):
         serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
@@ -393,6 +422,7 @@ def update_feedback_api(request, feedback_id):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
@@ -414,6 +444,7 @@ def add_product(request):
     else:
         form = ProductForm()
     return render(request, 'product/add_product.html', {'form': form})
+
 
 def update_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -440,9 +471,11 @@ def delete_product(request, product_id):
             return redirect('product_list')
     return JsonResponse({'error': 'Invalid request method. Use POST.'}, status=405)
 
+
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'product/product_list.html', {'products': products})
+
 
 # API Views
 @api_view(['GET', 'POST'])
@@ -458,6 +491,7 @@ def api_product_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def api_product_detail(request, product_id):
@@ -477,3 +511,43 @@ def api_product_detail(request, product_id):
     if request.method == 'DELETE':
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ExpenseViewSet(ModelViewSet):
+    queryset = Expense.objects.all().order_by('-date')
+    serializer_class = ExpenseSerializer
+
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+# Отображение страницы оплаты
+def payment_page(request):
+    return render(request, "payment/payment_page.html", {"STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY})
+
+stripe.api_key = settings.STRIPE_SECRET_KEY  # Ваш секретный ключ Stripe
+
+
+
+@csrf_exempt
+def create_payment(request):
+    if request.method == "POST":
+        try:
+            amount = int(request.POST.get("amount", 0))
+            user_name = request.POST.get("user_name", "Без имени")
+            intent = stripe.PaymentIntent.create(
+                amount=amount,
+                currency="kgs",
+                payment_method_types=["card"],
+                description=f"Оплата от {user_name}",
+            )
+            return JsonResponse({"clientSecret": intent.client_secret})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Только POST-запросы поддерживаются"}, status=405)
+
+def payment_success(request):
+    return render(request, "payment/payment_success.html")
+
+def payment_error(request):
+    return render(request, "payment/payment_error.html")

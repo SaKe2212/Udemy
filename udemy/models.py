@@ -194,3 +194,28 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class Expense(models.Model):
+    category = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(blank=True)
+    date = models.DateField()
+
+    def __str__(self):
+        return f"{self.category} - {self.amount}"
+
+
+
+
+
+class Payment(models.Model):
+    user = models.CharField(max_length=100)  # Поле для имени пользователя (или ID)
+    amount = models.IntegerField()  # Сумма в центах
+    payment_intent_id = models.CharField(max_length=255, unique=True)  # ID платежа Stripe
+    status = models.CharField(max_length=50)  # Статус платежа (например, "succeeded")
+    created_at = models.DateTimeField(auto_now_add=True)  # Время создания записи
+
+    def __str__(self):
+        return f"Payment {self.payment_intent_id} - {self.status}"

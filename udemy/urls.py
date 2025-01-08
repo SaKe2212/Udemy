@@ -4,11 +4,12 @@ from .views import (
     StudentViewSet, CourseViewSet, LessonViewSet, ReviewViewSet, EnrollmentViewSet,
     CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView,
     BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView, UserDataView
+     , create_payment, payment_page
 )
 from . import views
 from rest_framework.routers import DefaultRouter
 from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView,update_feedback,delete_feedback,
-create_feedback,feedback_list,feedback_list_api,delete_feedback_api,create_feedback_api,update_feedback_api
+create_feedback,feedback_list,feedback_list_api,delete_feedback_api,create_feedback_api,update_feedback_api, ExpenseViewSet
 
                      )
 router = DefaultRouter()
@@ -27,6 +28,7 @@ router.register(r'enrollments', EnrollmentViewSet, basename='enrollment')
 router.register(r'cart', CartViewSet, basename='cart')
 router.register(r'cart-items', CartItemViewSet, basename='cart-item')
 router.register(r'orders', OrderViewSet, basename='order')
+router.register(r'expenses', ExpenseViewSet, basename='expense')
 
 urlpatterns = [
     # Category paths
@@ -123,4 +125,9 @@ urlpatterns = [
     path('products/<int:product_id>/delete/', views.delete_product, name='delete_product'),
     path('product_list/', views.product_list, name='product_list'),
 
+#     оплат
+    path("payment/", views.payment_page, name="checkout_page"),
+    path("create-checkout-session/", views.create_payment, name="create_checkout_session"),
+    path("payment-success/", views.payment_success, name="payment_success"),
+    path("payment-error/", views.payment_error, name="payment_error"),
 ]
