@@ -129,5 +129,5 @@ urlpatterns = [
     path("payment/", views.payment_page, name="checkout_page"),
     path("create-checkout-session/", views.create_payment, name="create_checkout_session"),
     path("payment-success/", views.payment_success, name="payment_success"),
-    path("payment-error/", views.payment_error, name="payment_error"),
+    path("create-payment/", views.create_payment, name="create_payment"),
 ]

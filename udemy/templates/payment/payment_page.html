@@ -5,88 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Оплата</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input, .form-group div {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <h1>Оплата</h1>
+
     <form id="payment-form">
-        <label>
-            Имя:
-            <input type="text" id="user-name" required>
-        </label>
-        <br>
-        <label>
-            Сумма (в сомах):
-            <input type="number" id="amount" required>
-        </label>
-        <br>
-        <div id="card-element"><!-- Stripe ввод для карты --></div>
-        <div id="card-errors" role="alert" style="color: red;"></div>
-        <br>
-        <button type="submit">Оплатить</button>
+        <div class="form-group">
+            <label for="card-holder-name">Имя владельца карты</label>
+            <input type="text" id="card-holder-name" placeholder="Имя на карте" required />
+        </div>
+
+        <div class="form-group">
+            <label for="card-element">Номер карты</label>
+            <div id="card-element"></div>
+        </div>
+
+        <button type="button" id="pay-button">Оплатить</button>
+        <p id="payment-message" style="display: none; color: red;"></p>
     </form>
 
     <script>
-        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");  // Публичный ключ передается из views
+        // Инициализация Stripe
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}"); // Обязательно замените на ваш реальный публичный ключ Stripe
         const elements = stripe.elements();
-        const card = elements.create("card");
-        card.mount("#card-element");
 
-        const form = document.getElementById("payment-form");
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        // Создаем элемент для ввода номера карты
+        const cardElement = elements.create("card");
+        cardElement.mount("#card-element");
 
-            const userName = document.getElementById("user-name").value.trim();
-            const amount = document.getElementById("amount").value.trim();
+        // Обработчик клика по кнопке оплаты
+        document.getElementById("pay-button").addEventListener("click", async () => {
+            const cardHolderName = document.getElementById("card-holder-name").value;
 
-            if (!userName || !amount) {
-                alert("Пожалуйста, заполните все поля!");
+            if (!cardHolderName.trim()) {
+                alert("Введите имя на карте!");
                 return;
             }
 
             try {
-                // Отправляем данные на сервер для создания PaymentIntent
+                // Отправляем запрос на сервер для создания PaymentIntent
                 const response = await fetch("/create-payment/", {
                     method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: new URLSearchParams({
-                        user_name: userName,
-                        amount: amount * 100, // Переводим сумму в тиыны
-                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie('csrftoken') // Добавляем CSRF-токен для Django
+                    },
+                    body: JSON.stringify({ amount: 5000 }) // Сумма в копейках
                 });
-
-                if (!response.ok) {
-                    throw new Error("Ошибка на сервере. Проверьте данные.");
-                }
 
                 const data = await response.json();
-                const clientSecret = data.clientSecret;
 
-                if (!clientSecret) {
-                    throw new Error("Не удалось получить clientSecret. Проверьте сервер.");
-                }
+                if (data.clientSecret) {
+                    // Подтверждаем оплату с помощью Stripe
+                    const result = await stripe.confirmCardPayment(data.clientSecret, {
+                        payment_method: {
+                            card: cardElement,
+                            billing_details: { name: cardHolderName },
+                        },
+                    });
 
-                // Подтверждаем платеж через Stripe
-                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: card,
-                        billing_details: { name: userName },
-                    },
-                });
-
-                if (error) {
-                    // Если ошибка, перенаправляем на страницу ошибки
-                    window.location.href = `/payment-error/?message=${encodeURIComponent(error.message)}`;
-                } else if (paymentIntent && paymentIntent.status === "succeeded") {
-                    // Если оплата успешна, перенаправляем на страницу успеха
-                    window.location.href = "/payment-success/";
+                    if (result.error) {
+                        // Ошибка при подтверждении платежа
+                        document.getElementById("payment-message").textContent = `Ошибка: ${result.error.message}`;
+                        document.getElementById("payment-message").style.display = "block";
+                    } else {
+                        if (result.paymentIntent.status === "succeeded") {
+                            // Успешная оплата
+                            window.location.href = "/payment-success/"; // Перенаправление на страницу успеха
+                        }
+                    }
                 } else {
-                    throw new Error("Оплата не завершена. Проверьте детали платежа.");
+                    // Ошибка на стороне сервера
+                    document.getElementById("payment-message").textContent = `Ошибка сервера: ${data.error}`;
+                    document.getElementById("payment-message").style.display = "block";
                 }
-            } catch (err) {
-                console.error(err.message);
-                alert(err.message); // Показываем сообщение об ошибке
+            } catch (error) {
+                // Общая ошибка
+                document.getElementById("payment-message").textContent = `Ошибка: ${error.message}`;
+                document.getElementById("payment-message").style.display = "block";
             }
         });
+
+        // Функция для получения CSRF-токена из куков
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 </body>
 </html>

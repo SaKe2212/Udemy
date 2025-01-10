@@ -519,35 +519,27 @@ class ExpenseViewSet(ModelViewSet):
 
 
 
+def payment_success(request):
+    return render(request, "payment/success.html")
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-# Отображение страницы оплаты
 def payment_page(request):
     return render(request, "payment/payment_page.html", {"STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY})
 
-stripe.api_key = settings.STRIPE_SECRET_KEY  # Ваш секретный ключ Stripe
-
-
-
-@csrf_exempt
 def create_payment(request):
     if request.method == "POST":
         try:
-            amount = int(request.POST.get("amount", 0))
-            user_name = request.POST.get("user_name", "Без имени")
+            data = json.loads(request.body)
+            amount = int(data.get("amount", 0))
             intent = stripe.PaymentIntent.create(
                 amount=amount,
-                currency="kgs",
+                currency="usd",
                 payment_method_types=["card"],
-                description=f"Оплата от {user_name}",
+                description="Оплата заказа",
             )
             return JsonResponse({"clientSecret": intent.client_secret})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Только POST-запросы поддерживаются"}, status=405)
 
-def payment_success(request):
-    return render(request, "payment/payment_success.html")
-
-def payment_error(request):
-    return render(request, "payment/payment_error.html")
