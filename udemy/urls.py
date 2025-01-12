@@ -102,7 +102,7 @@ urlpatterns = [
     path('teachers/<int:pk>/', TeacherViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='teacher_detail'),
 
     #  Api
-    path('api/product_list', views.api_product_list, name='api_product_list'),
+    path('api/product_list/', views.api_product_list, name='api_product_list'),
     path('api/<int:product_id>/', views.api_product_detail, name='api_product_detail'),
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),

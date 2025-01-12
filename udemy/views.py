@@ -5,12 +5,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from .models import CustomUser, Profile, Description, Category, Cupcategory, PopularTopic, Instructor, Student, Course, \
-    Basket, Lesson, Review, Enrollment, Cart, CartItem, Order, Banner, Teacher,Feedback,Expense,Product
+    Basket, Lesson, Review, Enrollment, Cart, CartItem, Order, Banner, Teacher, Feedback, Expense, Product
 from .serializers import CategorySerializer, CupcategorySerializer, PopularTopicSerializer, InstructorSerializer, \
     StudentSerializer, CourseSerializer, BasketSerializer, LessonSerializer, ReviewSerializer, EnrollmentSerializer, \
     CartSerializer, CartItemSerializer, OrderSerializer, BannerSerializer, TeacherSerializer, ProfileSerializer, \
-    UserSerializer, LoginSerializer,FeedbackSerializer, DescriptionSerializer,ExpenseSerializer,ProductSerializer
-from .forms import SignUpForm, ProfileForm, LoginForm,FeedbackForm,ProductForm
+    UserSerializer, LoginSerializer, FeedbackSerializer, DescriptionSerializer, ExpenseSerializer, ProductSerializer
+from .forms import SignUpForm, ProfileForm, LoginForm, FeedbackForm, ProductForm
 from rest_framework.generics import RetrieveUpdateAPIView
 from django.views.generic import TemplateView
 import json
@@ -26,9 +26,6 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Payment
-
-
-
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -434,7 +431,6 @@ def delete_feedback_api(request, feedback_id):
     return Response({'message': 'Feedback deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
 
-# HTML Views
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -477,7 +473,6 @@ def product_list(request):
     return render(request, 'product/product_list.html', {'products': products})
 
 
-# API Views
 @api_view(['GET', 'POST'])
 def api_product_list(request):
     if request.method == 'GET':
@@ -518,14 +513,16 @@ class ExpenseViewSet(ModelViewSet):
     serializer_class = ExpenseSerializer
 
 
-
 def payment_success(request):
     return render(request, "payment/success.html")
 
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 def payment_page(request):
     return render(request, "payment/payment_page.html", {"STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY})
+
 
 def create_payment(request):
     if request.method == "POST":
@@ -542,4 +539,3 @@ def create_payment(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Только POST-запросы поддерживаются"}, status=405)
-
