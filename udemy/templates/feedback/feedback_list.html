@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отзывы</title>
+</head>
+<body>
+    <h1>Отзывы</h1>
+
+    <!-- Форма для добавления нового отзыва -->
+    <form method="POST" action="{% url 'create_feedback' %}">
+        {% csrf_token %}
+        <textarea name="content" placeholder="Ваш отзыв" required></textarea><br>
+        <label>Рейтинг:</label>
+        <input type="number" name="rating" min="1" max="5" required><br>
+        <button type="submit">Добавить отзыв</button>
+    </form>
+
+    <hr>
+
+    <!-- Список отзывов -->
+    <h2>Все отзывы</h2>
+    {% for feedback in feedbacks %}
+        <div>
+            <p><strong>{{ feedback.user.username }}</strong> ({{ feedback.rating }}): {{ feedback.content }}</p>
+            <p><em>Создано: {{ feedback.created_at }}</em></p>
+
+            <!-- Кнопки для редактирования и удаления -->
+            {% if feedback.user == request.user %}
+                <a href="{% url 'update_feedback' feedback.id %}">Редактировать</a>
+                <form method="POST" action="{% url 'delete_feedback' feedback.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Удалить</button>
+                </form>
+            {% endif %}
+        </div>
+        <hr>
+    {% endfor %}
+</body>
+</html>

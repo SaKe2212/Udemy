@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать продукт</title>
+    <style>
+        .form-container {
+            display: flex;
+            align-items: flex-start;
+        }
+        .product-image {
+            margin-right: 20px;
+        }
+        .product-image img {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <h1>Редактировать продукт: {{ product.name }}</h1>
+    <div class="form-container">
+        <div class="product-image">
+            {% if product.photo_path %}
+                <img src="{{ product.photo_path.url }}" alt="{{ product.name }}">
+            {% else %}
+                <p>Фото не загружено</p>
+            {% endif %}
+        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Обновить продукт</button>
+        </form>
+    </div>
+</body>
+</html>

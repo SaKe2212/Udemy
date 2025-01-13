@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Payment Test</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+        }
+        #card-element {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stripe Payment Test</h1>
+    <form id="payment-form">
+        <label for="card-element">Введите данные карты:</label>
+        <div id="card-element"><!-- Stripe будет монтировать поле здесь --></div>
+        <div id="card-errors" role="alert" style="color: red; margin-top: 10px;"></div>
+        <button id="submit">Оплатить</button>
+    </form>
+
+    <script>
+        // Получаем публичный ключ Stripe из контекста Django
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+
+        // Создаем элементы для оплаты
+        const elements = stripe.elements();
+        const card = elements.create("card");
+        card.mount("#card-element");
+
+        // Обработчик ошибок на вводе данных
+        card.on("change", (event) => {
+            const displayError = document.getElementById("card-errors");
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = "";
+            }
+        });
+
+        // Обработка формы
+        const form = document.getElementById("payment-form");
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            // Отправка запроса на сервер для получения clientSecret
+            const response = await fetch("/create-payment/", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ amount: 1000 }) // $10.00 в центах
+            });
+
+            const { clientSecret, error } = await response.json();
+            if (error) {
+                alert("Ошибка создания платежа: " + error);
+                return;
+            }
+
+            // Подтверждение оплаты через Stripe.js
+            const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: card,
+                },
+            });
+
+            if (stripeError) {
+                alert("Ошибка оплаты: " + stripeError.message);
+            } else if (paymentIntent) {
+                alert("Оплата успешно выполнена! ID платежа: " + paymentIntent.id);
+                console.log("Оплата прошла успешно", paymentIntent);
+            }
+        });
+    </script>
+</body>
+</html>

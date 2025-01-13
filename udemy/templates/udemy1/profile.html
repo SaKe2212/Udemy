@@ -40,6 +40,18 @@
         .error {
             color: red;
         }
+        .description, .theme {
+            margin-top: 20px;
+        }
+        .description p, .theme p {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #555;
+        }
+        .edit-profile {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -48,15 +60,25 @@
 
         <div class="profile-info">
             <p><strong>Username:</strong> {{ profile.user.username }}</p>
-
             <p><strong>Email:</strong> {{ profile.user.email }}</p>
-
-            <p><strong>Name:</strong> {{ profile.last_name }}</p>
-
-            <p><strong>Birth Date:</strong> {{ profile.birth_date }}</p>
+            <p><strong>Name:</strong> {{ profile.user.last_name }}</p> <!-- Исправлено -->
+            <p><strong>Birth Date:</strong> {{ profile.birth_date|default:"Not provided" }}</p> <!-- Проверка на пустое значение -->
         </div>
 
-        <a href="{% url 'home' %}"><button>Back to Home</button></a>  <!-- Кнопка для возврата на главную страницу -->
+        <div class="description">
+            <p><strong>Description:</strong> {{ profile.description|default:"No description available" }}</p> <!-- Проверка -->
+        </div>
+
+        <div class="theme">
+            <p><strong>Theme:</strong> {{ profile.headline|default:"No theme set" }}</p> <!-- Проверка -->
+        </div>
+
+        <a href="{% url 'home' %}"><button>Back to Home</button></a>
+
+        <div class="edit-profile">
+            <a href="{% url 'update_profile' %}"><button>Edit Profile</button></a>
+        </div>
     </div>
 </body>
 </html>
+

@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Course,Basket,Lesson, Review, Enrollment, Cart, CartItem, Order,Banner,Teacher
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Product
 from django.contrib.auth.forms import authenticate
-
+from .models import Description,Feedback, Expense
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,7 +38,7 @@ class InstructorSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Student
@@ -129,7 +129,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('user', 'first_name', 'last_name', 'birth_date')
+        fields = ('bio','user', 'first_name', 'last_name', 'birth_date','headline', 'description')
 
 
 class LoginSerializer(serializers.Serializer):
@@ -141,3 +141,33 @@ class LoginSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError("Invalid username or password.")
         return user
+
+
+class DescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Description
+        fields = ['id', 'user', 'text']  # или любые другие поля, которые хотите сериализовать
+
+    def update(self, instance, validated_data):
+        instance.text = validated_data.get('text', instance.text)
+        instance.save()
+        return instance
+class FeedbackSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Feedback
+        fields = ['id', 'content', 'rating', 'created_at', 'user']
+        read_only_fields = ['id', 'created_at', 'user']
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense
+        fields = '__all__'

@@ -28,7 +28,7 @@
         h1 {
             font-size: 22px;
             margin-bottom: 20px;
-            color: #333;
+            color: 444;
         }
 
         .form-group {
@@ -39,13 +39,12 @@
 
         label {
             font-weight: bold;
-            color: #555;
+            color: 898;
             font-size: 14px;
         }
 
         input[type="text"],
         input[type="email"],
-        input[type="date"],
         input[type="password"] {
             width: 100%;
             padding: 8px;
@@ -53,22 +52,6 @@
             border-radius: 5px;
             margin-top: 5px;
             font-size: 14px;
-        }
-
-        .password-container {
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-
-        .toggle-password {
-            font-size: 16px;
-            color: #007bff;
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-            margin-left: 5px;
         }
 
         button {
@@ -117,6 +100,7 @@
         <form method="POST">
             {% csrf_token %}
 
+            <!-- Email -->
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" value="{{ profile.user.email }}" readonly required>
@@ -125,24 +109,31 @@
                 </button>
             </div>
 
+            <!-- Name -->
             <div class="form-group">
                 <label for="last_name">Name:</label>
-                <input type="text" id="last_name" name="last_name" value="{{ profile.user.last_name }}" required>
+                <input type="text" id="last_name" name="last_name" value="{{ profile.user.last_name }}" readonly required>
                 <button class="change-name-button" type="button" onclick="window.location.href='{% url 'change_name' %}'">
                     Tap to change name
                 </button>
             </div>
 
+            <!-- Password -->
             <div class="form-group">
                 <label for="password">Password:</label>
-                <div class="password-container">
-                    <input type="password" id="password" name="password" value="{{ user.password }}" readonly required>
-                    <button type="button" class="toggle-password" onclick="togglePassword('password')">👁️</button>
-                </div>
+                <input type="password" id="password" name="password" value="{{ user.password }}" readonly required>
+                <button class="change-password-button" type="button" onclick="window.location.href='{% url 'change_password' %}'">
+                    Tap to change password
+                </button>
             </div>
 
-            <div class="change-buttons">
-                <button type="button" class="change-password-button" onclick="window.location.href='{% url 'change_password' %}'">Change Password</button>
+            <!-- Description -->
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="4" cols="50" readonly>{{ profile.description }}</textarea>
+                <button class="change-description-button" type="button" onclick="toggleDescription()">
+                    Tap to change description
+                </button>
             </div>
 
             <button type="submit">Save changes</button>
@@ -150,12 +141,13 @@
     </div>
 
     <script>
-        function togglePassword(fieldId) {
-            const field = document.getElementById(fieldId);
-            const type = field.type === 'password' ? 'text' : 'password';
-            field.type = type;
+        // Toggle the description field between readonly and editable
+        function toggleDescription() {
+            const descriptionField = document.getElementById('description');
+            const currentState = descriptionField.readOnly;
+            descriptionField.readOnly = !currentState;
+            descriptionField.focus();
         }
     </script>
 </body>
 </html>
-

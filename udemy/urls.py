@@ -1,12 +1,35 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     CategoryViewSet, CupcategoryViewSet, PopularTopicViewSet, InstructorViewSet,
     StudentViewSet, CourseViewSet, LessonViewSet, ReviewViewSet, EnrollmentViewSet,
     CartViewSet, CartItemViewSet, OrderViewSet, BannerListCreateView,
-    BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView
+    BasketListViewSet, TeacherViewSet, register, login_view, profile_view, update_profile, HomeView, UserDataView
+     , create_payment, payment_page
 )
+from . import views
+from rest_framework.routers import DefaultRouter
+from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView,update_feedback,delete_feedback,
+create_feedback,feedback_list,feedback_list_api,delete_feedback_api,create_feedback_api,update_feedback_api, ExpenseViewSet
 
-from .views import ( change_name, change_password, change_email, RegisterView, LoginView, ProfileView)
+                     )
+router = DefaultRouter()
+
+# Подключаем маршруты для ViewSet'ов
+router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'cupcategories', CupcategoryViewSet, basename='cupcategory')
+router.register(r'popular-topics', PopularTopicViewSet, basename='popular-topic')
+router.register(r'instructors', InstructorViewSet, basename='instructor')
+router.register(r'students', StudentViewSet, basename='student')
+router.register(r'courses', CourseViewSet, basename='course')
+router.register(r'baskets', BasketListViewSet, basename='basket')
+router.register(r'lessons', LessonViewSet, basename='lesson')
+router.register(r'reviews', ReviewViewSet, basename='review')
+router.register(r'enrollments', EnrollmentViewSet, basename='enrollment')
+router.register(r'cart', CartViewSet, basename='cart')
+router.register(r'cart-items', CartItemViewSet, basename='cart-item')
+router.register(r'orders', OrderViewSet, basename='order')
+router.register(r'expenses', ExpenseViewSet, basename='expense')
+
 urlpatterns = [
     # Category paths
     path('categories/', CategoryViewSet.as_view({'get': 'list', 'post': 'create'}), name='category_list'),
@@ -78,8 +101,33 @@ urlpatterns = [
     path('teachers/', TeacherViewSet.as_view({'get': 'list', 'post': 'create'}), name='teacher_list'),
     path('teachers/<int:pk>/', TeacherViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='teacher_detail'),
 
+    #  Api
+    path('api/product_list/', views.api_product_list, name='api_product_list'),
+    path('api/<int:product_id>/', views.api_product_detail, name='api_product_detail'),
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
-    path('api/profile/', ProfileView.as_view(), name='profile'),
+    path('api/profile/', views.ProfileView.as_view(), name='api/profile'),
+    path('api/user-data/', UserDataView.as_view(), name='user-data'),
+    path('api/', include(router.urls)),
+    path('api/banners/', BannerListCreateView.as_view(), name='banner-list-create'),
+    path('api/feedbacks/', feedback_list_api, name='feedback_list_api'),
+    path('api/feedbacks/create/', create_feedback_api, name='create_feedback_api'),
+    path('api/feedbacks/<int:feedback_id>/update/', update_feedback_api, name='update_feedback_api'),
+    path('api/feedbacks/<int:feedback_id>/delete/', delete_feedback_api, name='delete_feedback_api'),
 
+    path('feedbacks/', feedback_list, name='feedback_list'),
+    path('feedbacks/create/', create_feedback, name='create_feedback'),
+    path('feedbacks/<int:feedback_id>/update/', update_feedback, name='update_feedback'),
+    path('feedbacks/<int:feedback_id>/delete/', delete_feedback, name='delete_feedback'),
+
+    path('add_product/', views.add_product, name='add_product'),
+    path('products/<int:product_id>/update/', views.update_product, name='update_product'),
+    path('products/<int:product_id>/delete/', views.delete_product, name='delete_product'),
+    path('product_list/', views.product_list, name='product_list'),
+
+#     оплат
+    path("payment/", views.payment_page, name="checkout_page"),
+    path("create-checkout-session/", views.create_payment, name="create_checkout_session"),
+    path("payment-success/", views.payment_success, name="payment_success"),
+    path("create-payment/", views.create_payment, name="create_payment"),
 ]

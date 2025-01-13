@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-gigff)=(os801e#h8z6(6q!_()-v1f9m5zsk7xohl&l1b#77^_'
+SECRET_KEY = ('django-insecure-gigff)=(os801e#h8z6(6q!_()-v1f9m5zsk7xohl&l1b#77^_')
 DEBUG = True
 ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'udemy.CustomUser'
@@ -17,9 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'udemy',
     'rest_framework',
-    'corsheaders'
-
-
+    'corsheaders',
 
 ]
 DATABASES = {
@@ -28,7 +26,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -126,3 +123,5 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 
+STRIPE_PUBLIC_KEY = "pk_test_51QeLyaPrZtds7DEWNd5ARixTDn7JIgn4xShk8Jrlpr6zhfRm8nmv3JlstV2ONVKOBJhLfjKHIsYePHAKqk1eJq6S00xr3h06nH"
+STRIPE_SECRET_KEY = "sk_test_51QeLyaPrZtds7DEWf4wnbDM6NmHdRojpqL8Eu67dgLfvHlFtb2YGEqoX0Ol7T4tqEr6wA0wy7V0aMnJDBbVMkvwl00yQ0ZsfpR"
