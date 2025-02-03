@@ -1,11 +1,11 @@
 import os
 from pathlib import Path
-
+from decouple import config 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = ('django-insecure-gigff)=(os801e#h8z6(6q!_()-v1f9m5zsk7xohl&l1b#77^_')
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG =True
+ALLOWED_HOSTS = ['10.160.0.2', '34.93.66.214']
 AUTH_USER_MODEL = 'udemy.CustomUser'
 INSTALLED_APPS = [
     'modeltranslation',
@@ -22,9 +22,14 @@ INSTALLED_APPS = [
 ]
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
+
 }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -103,12 +108,14 @@ LOGOUT_REDIRECT_URL = 'home'
 
 
 
-
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 CORS_ALLOWED_ORIGINS = [
     "https://example.com",
     "https://sub.example.com",
-    "http://localhost:8080",
-    "http://127.0.0.1:9000",
+    "http://localhost:3000",
+    "http://127.0.0.8000",
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -125,3 +132,8 @@ CORS_ALLOW_METHODS = (
 
 STRIPE_PUBLIC_KEY = "pk_test_51QeLyaPrZtds7DEWNd5ARixTDn7JIgn4xShk8Jrlpr6zhfRm8nmv3JlstV2ONVKOBJhLfjKHIsYePHAKqk1eJq6S00xr3h06nH"
 STRIPE_SECRET_KEY = "sk_test_51QeLyaPrZtds7DEWf4wnbDM6NmHdRojpqL8Eu67dgLfvHlFtb2YGEqoX0Ol7T4tqEr6wA0wy7V0aMnJDBbVMkvwl00yQ0ZsfpR"
+
+
+
+
+CORS_ALLOW_ALL_ORIGINS = True

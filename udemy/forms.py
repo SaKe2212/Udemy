@@ -39,9 +39,12 @@ class FeedbackForm(forms.ModelForm):
         model = Feedback
         fields = ['content', 'rating']
 
-
 class ProductForm(forms.ModelForm):
+    videos = forms.FileField(widget=forms.FileInput(), required=False)    
+    
     class Meta:
         model = Product
-        fields = ['name', 'images', 'price', 'description',]
+        fields = ['name',  'price', 'description','images']
 
+class LogoutForm(forms.ModelForm):
+    pass

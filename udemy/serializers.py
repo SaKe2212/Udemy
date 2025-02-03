@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 from .models import Category, Cupcategory, PopularTopic, Instructor, Student, Course,Basket,Lesson, Review, Enrollment, Cart, CartItem, Order,Banner,Teacher
 from django.contrib.auth.models import User
@@ -164,10 +165,16 @@ class FeedbackSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ['name','images' , 'description', 'video', 'price']
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
         fields = '__all__'
+
+
+
+
+class LogoutSerializers(serializers.ModelSerializer):
+      pass

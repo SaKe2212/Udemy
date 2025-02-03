@@ -1,8 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список продуктов</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .product { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+        .product img { max-width: 200px; display: block; margin: 10px 0; }
+        .product video { max-width: 320px; display: block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
 <h1>Список продуктов</h1>
 <ul>
     {% for product in products %}
-        <li>
-            {{ product.name }} - {{ product.price }}
+        <li class="product">
+            <strong>{{ product.name }}</strong> - {{ product.price }} руб.
+            <br>
+            <p>{{ product.description }}</p>
+
+            <!-- Отображение изображения, если загружено -->
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="Фото {{ product.name }}">
+            {% else %}
+                <p>Фото не загружено.</p>
+            {% endif %}
+
+            <!-- Отображение видео -->
+            {% if product.videos.all %}
+                {% for video in product.videos.all %}
+                    <video controls>
+                        <source src="{{ video.file.url }}" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                {% endfor %}
+            {% else %}
+                <p>Видео не загружено.</p>
+            {% endif %}
+            
+            <br>
             <a href="{% url 'update_product' product.id %}">Редактировать</a>
             <form action="{% url 'delete_product' product.id %}" method="post" style="display:inline;" onsubmit="return confirmDelete(event);">
                 {% csrf_token %}
@@ -11,14 +49,17 @@
         </li>
     {% endfor %}
 </ul>
+
 <a href="{% url 'add_product' %}">Добавить продукт</a>
 
 <script>
 function confirmDelete(event) {
-    const confirmation = confirm("Вы точно хотите удалить этот продукт?");
-    if (!confirmation) {
+    if (!confirm("Вы точно хотите удалить этот продукт?")) {
         event.preventDefault();
     }
-    return confirmation;
 }
 </script>
+
+</body>
+</html>
+
