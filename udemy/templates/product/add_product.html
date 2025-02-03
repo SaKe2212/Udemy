@@ -10,42 +10,42 @@
 
     <form method="POST" enctype="multipart/form-data" id="productForm">
         {% csrf_token %}
-        {{ form.as_p }}  <!-- Отображение формы -->
         
-        <div id="video-container">
-            <label for="id_videos">Загрузить видео:</label>
-            <input type="file" name="videos" class="video-input" multiple>
+        <!-- Поле для имени -->
+        <div>
+            <label for="id_name">Название продукта:</label>
+            {{ form.name }}
         </div>
-        <button type="button" id="add-video">Добавить еще видео</button>
-        
+
+        <!-- Поле для цены -->
+        <div>
+            <label for="id_price">Цена:</label>
+            {{ form.price }}
+        </div>
+
+        <!-- Поле для описания -->
+        <div>
+            <label for="id_description">Описание:</label>
+            {{ form.description }}
+        </div>
+
+        <!-- Поле для загрузки одного фото -->
         <div>
             <label for="id_photo">Загрузить фото:</label>
-            <input type="file" name="photo" id="id_photo">
+            <input type="file" name="images" id="id_photo" accept="image/*">
         </div>
-        
+
+        <!-- Поле для загрузки нескольких видео -->
+        <div>
+            <label for="id_videos">Загрузить видео:</label>
+            <input type="file" name="videos" id="id_videos" multiple accept="video/*">
+        </div>
+
+        <!-- Кнопка отправки формы -->
         <button type="submit">Добавить продукт</button>
     </form>
 
     <br>
     <a href="{% url 'product_list' %}">Назад к списку продуктов</a>
-    
-    {% if last_product %}
-        <br><br>
-        <a href="{% url 'product_detail' last_product.id %}">
-             <button>Последний добавленный продукт</button>
-        </a>
-    {% endif %}
-
-    <script>
-        document.getElementById('add-video').addEventListener('click', function() {
-            let newVideoInput = document.createElement('input');
-            newVideoInput.type = 'file';
-            newVideoInput.name = 'videos';  // Keep the same name for the server to handle multiple files
-            newVideoInput.className = 'video-input';
-            newVideoInput.setAttribute('multiple', 'multiple');  // Allow for multiple file uploads
-            document.getElementById('video-container').appendChild(newVideoInput);
-        });
-    </script>
 </body>
 </html>
-

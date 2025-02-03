@@ -22,15 +22,15 @@
             <p>{{ product.description }}</p>
 
             <!-- Отображение изображения, если загружено -->
-            {% if product.image %}
-                <img src="{{ product.image.url }}" alt="Фото {{ product.name }}">
+            {% if product.images %}
+                <img src="{{ product.images.url }}" alt="Фото {{ product.name }}">
             {% else %}
                 <p>Фото не загружено.</p>
             {% endif %}
 
             <!-- Отображение видео -->
-            {% if product.videos.all %}
-                {% for video in product.videos.all %}
+            {% if product.video_set.all %}
+                {% for video in product.video_set.all %}
                     <video controls>
                         <source src="{{ video.file.url }}" type="video/mp4">
                         Ваш браузер не поддерживает видео.
@@ -62,4 +62,3 @@ function confirmDelete(event) {
 
 </body>
 </html>
-

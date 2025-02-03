@@ -27,7 +27,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Payment
 from .serializers import LogoutSerializers
-
+from .models import Video
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -433,21 +433,22 @@ def delete_feedback_api(request, feedback_id):
 
 
 def add_product(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            product = form.save()
+            product = form.save()  # Сохраняем продукт
             
-         
-            videos = request.FILES.getlist('videos')
+            # Сохраняем все видео
+            videos = request.FILES.getlist('videos')  # Получаем все файлы с ключом 'videos'
             for video in videos:
-                Video.objects.create(product=product, file=video)
-
-            return redirect('product_list') 
+                Video.objects.create(product=product, file=video)  # Сохраняем видео для этого продукта
+            
+            return redirect('product_list')  # Перенаправляем на список продуктов
     else:
         form = ProductForm()
 
     return render(request, 'product/add_product.html', {'form': form})
+
 
 def update_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
