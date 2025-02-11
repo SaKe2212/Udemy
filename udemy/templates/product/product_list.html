@@ -29,8 +29,8 @@
             {% endif %}
 
             <!-- Отображение видео -->
-            {% if product.video_set.all %}
-                {% for video in product.video_set.all %}
+            {% if product.videos.exists %}
+                {% for video in product.videos.all %}
                     <video controls>
                         <source src="{{ video.file.url }}" type="video/mp4">
                         Ваш браузер не поддерживает видео.
