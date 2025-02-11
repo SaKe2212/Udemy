@@ -29,7 +29,7 @@ class ProfileForm(forms.ModelForm):
 from django import forms
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=100)
+    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput)
 
 

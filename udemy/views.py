@@ -28,6 +28,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Payment
 from .serializers import LogoutSerializers
 from .models import Video
+from django.contrib.auth import logout
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -217,27 +221,36 @@ def register(request):
     return render(request, 'udemy1/register.html', {'form': form})
 
 
+
+
+
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = CustomUser.objects.filter(username=username).first()
+            
+            user = CustomUser.objects.filter(email=email).first()
             if user is None:
-                messages.error(request, 'User does not exist. Please register first.')
-                return redirect('register')
-            user = authenticate(request, username=username, password=password)
+                return JsonResponse({'success': False, 'error': 'Пользователь не найден'}, status=400)
+            
+            user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                request.session['user_title'] = user.title
+                return JsonResponse({'success': True, 'message': f'Вы вошли как {user.title}', 'redirect_url': '/'})
             else:
-                messages.error(request, 'Invalid credentials')
+                return JsonResponse({'success': False, 'error': 'Неверный пароль'}, status=400)
         else:
-            messages.error(request, 'Form is not valid')
+            return JsonResponse({'success': False, 'error': 'Неверный ввод данных'}, status=400)
+    
     else:
         form = LoginForm()
     return render(request, 'udemy1/login.html', {'form': form})
+
+
+
 
 
 class HomeView(TemplateView):
@@ -569,10 +582,7 @@ def logout_view(request):
 
 
 
-from django.contrib.auth import logout
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+
 
 class LogoutView(APIView):
     def post(self, request):

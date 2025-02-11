@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from decouple import config 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = ('django-insecure-gigff)=(os801e#h8z6(6q!_()-v1f9m5zsk7xohl&l1b#77^_')

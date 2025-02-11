@@ -5,26 +5,34 @@
     <button type="submit">Войти</button>
 </form>
 
+<p id="error-message" style="color: red; display: none;"></p> <!-- Сообщение об ошибке -->
+
 <script>
     document.getElementById('login-form').addEventListener('submit', function(event) {
         event.preventDefault();  // Предотвратить стандартную отправку формы
 
-        // Выполнить POST-запрос с помощью Fetch API
-        fetch('', {
-            method: 'POST',
-            body: new FormData(this),
+        let formData = new FormData(this);
+
+        fetch("", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
         })
-        .then(response => {
-            if (response.ok) {
-                // Если вход успешен, перенаправить на главную страницу
-                window.location.href = "/";  // или на другой URL, например, '/home'
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);  // Покажем сообщение об успешном входе
+                window.location.href = data.redirect_url;  // Перенаправим
             } else {
-                alert("Ошибка входа!");
+                let errorMessage = document.getElementById("error-message");
+                errorMessage.textContent = data.error;
+                errorMessage.style.display = "block";
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error("Ошибка:", error);
         });
     });
 </script>
-

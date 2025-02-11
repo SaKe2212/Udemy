@@ -7,6 +7,7 @@ class CustomUser(AbstractUser):
     birth_date = models.DateField(null=True, blank=True)
     additional_field = models.CharField(max_length=100, blank=True, null=True)
     bio = models.TextField(null=True, blank=True)
+    title = models.CharField(max_length=100, default="Без титула")
     def __str__(self):
         return self.username
 
@@ -221,3 +222,4 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment {self.payment_intent_id} - {self.status}"
+
