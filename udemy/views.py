@@ -250,9 +250,6 @@ def login_view(request):
     return render(request, 'udemy1/login.html', {'form': form})
 
 
-
-
-
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'
 
@@ -275,7 +272,7 @@ def profile_view(request):
                 data = json.loads(request.body)
                 profile.first_name = data.get('first_name', profile.first_name)
                 profile.last_name = data.get('last_name', profile.last_name)
-                profile.bio = data.get('bio', profile.bio)  # Пример
+                profile.bio = data.get('bio', profile.bio)
                 profile.save()
                 return JsonResponse({'status': 'success', 'message': 'Profile updated successfully!'})
             except Exception as e:
@@ -574,15 +571,9 @@ def api_add_product(request):
 
 
 
-
-
 def logout_view(request):
     logout(request)
     return redirect('home')
-
-
-
-
 
 class LogoutView(APIView):
     def post(self, request):

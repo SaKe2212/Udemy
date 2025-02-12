@@ -8,32 +8,9 @@
 <body>
     <h1>Добавить продукт</h1>
 
-    <form method="POST" enctype="multipart/form-data" id="productForm">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        
-        <!-- Поле для имени -->
-        <div>
-            <label for="id_name">Название продукта:</label>
-            {{ form.name }}
-        </div>
-
-        <!-- Поле для цены -->
-        <div>
-            <label for="id_price">Цена:</label>
-            {{ form.price }}
-        </div>
-
-        <!-- Поле для описания -->
-        <div>
-            <label for="id_description">Описание:</label>
-            {{ form.description }}
-        </div>
-
-        <!-- Поле для загрузки одного фото -->
-        <div>
-            <label for="id_photo">Загрузить фото:</label>
-            <input type="file" name="images" id="id_photo" accept="image/*">
-        </div>
+        {{ form.as_p }}
 
         <!-- Поле для загрузки нескольких видео -->
         <div>
@@ -41,7 +18,6 @@
             <input type="file" name="videos" id="id_videos" multiple accept="video/*">
         </div>
 
-        <!-- Кнопка отправки формы -->
         <button type="submit">Добавить продукт</button>
     </form>
 
