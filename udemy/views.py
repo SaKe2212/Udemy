@@ -32,6 +32,8 @@ from django.contrib.auth import logout
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.hashers import check_password
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -224,6 +226,7 @@ def register(request):
 
 
 
+
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -233,10 +236,12 @@ def login_view(request):
             
             user = CustomUser.objects.filter(email=email).first()
             if user is None:
-                return JsonResponse({'success': False, 'error': 'Пользователь не найден'}, status=400)
+                # Проверяем похожие email
+                similar_users = CustomUser.objects.filter(email__icontains=email[:5])
+                similar_emails = [u.email for u in similar_users]
+                return JsonResponse({'success': False, 'error': 'Пользователь не найден', 'suggestions': similar_emails}, status=400)
             
-            user = authenticate(request, email=email, password=password)
-            if user is not None:
+            if check_password(password, user.password):
                 login(request, user)
                 request.session['user_title'] = user.title
                 return JsonResponse({'success': True, 'message': f'Вы вошли как {user.title}', 'redirect_url': '/'})
@@ -248,6 +253,7 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, 'udemy1/login.html', {'form': form})
+
 
 
 class HomeView(TemplateView):
