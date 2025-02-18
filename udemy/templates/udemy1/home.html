@@ -80,6 +80,7 @@
         <a href="{% url 'logout' %}">Выйти</a>  <!-- Ссылка для выхода -->
     {% else %}
         <a href="{% url 'login' %}">Войти</a>  <!-- Ссылка для входа, если не авторизован -->
+        <a href="{%url 'register' %}">ЗАрегистровоатся</a>
     {% endif %}
 </nav>
 
@@ -90,6 +91,7 @@
 
     <!-- Ссылка на страницу отзывов -->
     <a href="{% url 'feedback_list' %}" class="button">Перейти к отзывам</a>
+    <a href="{% url 'add_product' %}" class="button">ДОбавит курс</a>
 </div>
 
 </body>
