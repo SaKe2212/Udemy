@@ -254,6 +254,7 @@ def login_view(request):
     return render(request, 'udemy1/login.html', {'form': form})
 
 
+
 class HomeView(TemplateView):
     template_name = 'udemy1/home.html'
 
