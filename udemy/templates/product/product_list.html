@@ -6,49 +6,67 @@
     <title>Список продуктов</title>
     <style>
         body { font-family: Arial, sans-serif; }
-        .product { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; }
+        .category-block { width: 22%; border: 1px solid #ddd; padding: 15px; box-sizing: border-box; }
+        .product { border-bottom: 1px solid #ddd; padding: 10px 0; }
         .product img { max-width: 200px; display: block; margin: 10px 0; }
         .product video { max-width: 320px; display: block; margin: 10px 0; }
+        .category { font-size: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <h1>Список продуктов</h1>
-<ul>
-    {% for product in products %}
-        <li class="product">
-            <strong>{{ product.name }}</strong> - {{ product.price }} руб.
-            <br>
-            <p>{{ product.description }}</p>
 
-            <!-- Отображение изображения, если загружено -->
-            {% if product.images %}
-                <img src="{{ product.images.url }}" alt="Фото {{ product.name }}">
-            {% else %}
-                <p>Фото не загружено.</p>
-            {% endif %}
-
-            <!-- Отображение видео -->
-            {% if product.videos.exists %}
-                {% for video in product.videos.all %}
-                    <video controls>
-                        <source src="{{ video.file.url }}" type="video/mp4">
-                        Ваш браузер не поддерживает видео.
-                    </video>
-                {% endfor %}
-            {% else %}
-                <p>Видео не загружено.</p>
-            {% endif %}
-            
-            <br>
-            <a href="{% url 'update_product' product.id %}">Редактировать</a>
-            <form action="{% url 'delete_product' product.id %}" method="post" style="display:inline;" onsubmit="return confirmDelete(event);">
-                {% csrf_token %}
-                <button type="submit">Удалить</button>
-            </form>
-        </li>
+<!-- Фильтр по категориям -->
+<label for="categoryFilter">Выберите категорию:</label>
+<select id="categoryFilter">
+    <option value="all">Все</option>
+    {% for category in grouped_products.keys %}
+        <option value="{{ category }}">{{ category }}</option>
     {% endfor %}
-</ul>
+</select>
+
+<div class="container">
+    {% for category, products in grouped_products.items %}
+        <div class="category-block" data-category="{{ category }}">
+            <h2 class="category">{{ category }}</h2>
+            <ul>
+                {% for product in products %}
+                    <li class="product">
+                        <strong>{{ product.name }}</strong> - {{ product.price }} руб.
+                        <p>{{ product.description }}</p>
+                        <p><strong>Подкатегория:</strong> {{ product.subcategory }}</p>
+
+                        {% if product.images %}
+                            <img src="{{ product.images.url }}" alt="Фото {{ product.name }}">
+                        {% else %}
+                            <p>Фото не загружено.</p>
+                        {% endif %}
+
+                        {% if product.videos.exists %}
+                            {% for video in product.videos.all %}
+                                <video controls>
+                                    <source src="{{ video.file.url }}" type="video/mp4">
+                                    Ваш браузер не поддерживает видео.
+                                </video>
+                            {% endfor %}
+                        {% else %}
+                            <p>Видео не загружено.</p>
+                        {% endif %}
+
+                        <br>
+                        <a href="{% url 'update_product' product.id %}">Редактировать</a>
+                        <form action="{% url 'delete_product' product.id %}" method="post" style="display:inline;" onsubmit="return confirmDelete(event);">
+                            {% csrf_token %}
+                            <button type="submit">Удалить</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
 
 <a href="{% url 'add_product' %}">Добавить продукт</a>
 
@@ -58,6 +76,18 @@ function confirmDelete(event) {
         event.preventDefault();
     }
 }
+
+// Фильтрация категорий
+document.getElementById('categoryFilter').addEventListener('change', function() {
+    let selectedCategory = this.value;
+    document.querySelectorAll('.category-block').forEach(block => {
+        if (selectedCategory === 'all' || block.getAttribute('data-category') === selectedCategory) {
+            block.style.display = 'block';
+        } else {
+            block.style.display = 'none';
+        }
+    });
+});
 </script>
 
 </body>

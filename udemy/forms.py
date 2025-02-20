@@ -44,7 +44,7 @@ class ProductForm(forms.ModelForm):
     
     class Meta:
         model = Product
-        fields = ['name',  'price', 'description','images']
+        fields = ['name',  'price', 'description','images', ]
 
 class LogoutForm(forms.ModelForm):
     pass

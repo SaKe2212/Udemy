@@ -5,6 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавить продукт</title>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const categorySelect = document.getElementById("category");
+            const subcategoryContainer = document.getElementById("subcategory-container");
+            const subcategorySelect = document.getElementById("subcategory");
+
+            const subcategories = {
+                "Разработчик": ["Python", "Java", "JavaScript", "C#", "Go"],
+                "Тестер": ["Selenium", "JMeter", "TestRail", "Appium"],
+                "База данных": ["MySQL", "PostgreSQL", "MongoDB", "Oracle"],
+                "Дизайнер": ["Figma", "Photoshop", "Illustrator", "Sketch"]
+            };
+
+            categorySelect.addEventListener("change", function() {
+                const selectedCategory = categorySelect.value;
+                subcategorySelect.innerHTML = "";
+
+                if (selectedCategory in subcategories) {
+                    subcategories[selectedCategory].forEach(sub => {
+                        let option = document.createElement("option");
+                        option.value = sub;
+                        option.textContent = sub;
+                        subcategorySelect.appendChild(option);
+                    });
+                    subcategoryContainer.style.display = "block";
+                } else {
+                    subcategoryContainer.style.display = "none";
+                }
+            });
+        });
+
         function addVideoInput() {
             let container = document.getElementById('video-container');
             let input = document.createElement('input');
@@ -22,7 +52,23 @@
         {% csrf_token %}
         {{ form.as_p }}
 
-        <!-- Поле для загрузки нескольких видео -->
+        <!-- Выбор категории -->
+        <label for="category">Выберите категорию:</label>
+        <select name="category" id="category">
+            <option value="">-- Выберите --</option>
+            <option value="Разработчик">Разработчик</option>
+            <option value="Тестер">Тестер</option>
+            <option value="База данных">База данных</option>
+            <option value="Дизайнер">Дизайнер</option>
+        </select>
+
+        <!-- Подкатегории (языки и инструменты) -->
+        <div id="subcategory-container" style="display: none;">
+            <label for="subcategory">Выберите технологию:</label>
+            <select name="subcategory" id="subcategory"></select>
+        </div>
+
+        <!-- Поле для загрузки видео -->
         <div id="video-container">
             <label for="id_videos">Загрузить видео:</label>
             <input type="file" name="videos" id="id_videos" accept="video/*">
@@ -36,4 +82,3 @@
     <a href="{% url 'product_list' %}">Назад к списку продуктов</a>
 </body>
 </html>
-

@@ -451,14 +451,13 @@ def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            product = form.save()  # Сохраняем продукт
+            product = form.save()  
             
-            # Сохраняем все видео
-            videos = request.FILES.getlist('videos')  # Получаем все файлы с ключом 'videos'
+            videos = request.FILES.getlist('videos')  
             for video in videos:
-                Video.objects.create(product=product, file=video)  # Сохраняем видео для этого продукта
+                Video.objects.create(product=product, file=video) 
             
-            return redirect('product_list')  # Перенаправляем на список продуктов
+            return redirect('product_list') 
     else:
         form = ProductForm()
 
@@ -490,10 +489,22 @@ def delete_product(request, product_id):
             return redirect('product_list')
     return JsonResponse({'error': 'Invalid request method. Use POST.'}, status=405)
 
+from django.shortcuts import render
+from .models import Product
 
 def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'product/product_list.html', {'products': products})
+    products = Product.objects.all().select_related('category')
+
+    grouped_products = {}
+    for product in products:
+        category_name = product.category.name if product.category else "Без категории"
+        if category_name not in grouped_products:
+            grouped_products[category_name] = []
+        grouped_products[category_name].append(product)
+
+    print("DEBUG: grouped_products =", grouped_products)  # Выведет словарь в консоль Django
+
+    return render(request, 'product/product_list.html', {'grouped_products': grouped_products})
 
 
 @api_view(['GET', 'POST'])

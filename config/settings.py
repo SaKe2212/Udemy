@@ -1,11 +1,10 @@
-from decouple import config
 import os
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = ('django-insecure-gigff)=(os801e#h8z6(6q!_()-v1f9m5zsk7xohl&l1b#77^_')
 DEBUG =True
-ALLOWED_HOSTS = ['35.223.148.229']
+ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'udemy.CustomUser'
 INSTALLED_APPS = [
     'modeltranslation',
@@ -24,14 +23,10 @@ INSTALLED_APPS = [
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-    }
+     'default': {
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': BASE_DIR / 'db.sqlite3',
+     }
 }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
